@@ -14,7 +14,7 @@ void signalHandler(int sig) {
         fflush(g_crashLog);
         fclose(g_crashLog);
     }
-    _exit(1);
+    std::exit(1);
 }
 
 void AndroidApp::_Init(android_app* state) {
