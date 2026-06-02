@@ -11,20 +11,22 @@ public class MainActivity extends NativeActivity {
     static {
         try {
             // Write to file IMMEDIATELY to see if we even get here
-            FileWriter fw = new FileWriter("/sdcard/bananasdk_start.txt");
-            fw.write("MainActivity class loading...\n");
-            fw.close();
-        } catch (Exception e) {
-            // Silently fail
-        }
+            try {
+                FileWriter fw = new FileWriter("/sdcard/bananasdk_start.txt");
+                fw.write("MainActivity class loading...\n");
+                fw.close();
+            } catch (Exception e) {
+                // Silently fail
+            }
 
-        try {
             System.loadLibrary("bananasdk");
             Log.i(TAG, "Native library loaded successfully");
             
-            FileWriter fw = new FileWriter("/sdcard/bananasdk_start.txt", true);
-            fw.write("Native library loaded successfully\n");
-            fw.close();
+            try {
+                FileWriter fw = new FileWriter("/sdcard/bananasdk_start.txt", true);
+                fw.write("Native library loaded successfully\n");
+                fw.close();
+            } catch (Exception ex) {}
         } catch (UnsatisfiedLinkError e) {
             Log.e(TAG, "Failed to load native library: " + e.getMessage(), e);
             try {
@@ -42,9 +44,11 @@ public class MainActivity extends NativeActivity {
             super.onCreate(savedInstanceState);
             Log.i(TAG, "MainActivity created successfully");
             
-            FileWriter fw = new FileWriter("/sdcard/bananasdk_start.txt", true);
-            fw.write("onCreate() reached\n");
-            fw.close();
+            try {
+                FileWriter fw = new FileWriter("/sdcard/bananasdk_start.txt", true);
+                fw.write("onCreate() reached\n");
+                fw.close();
+            } catch (Exception ex) {}
         } catch (Exception e) {
             Log.e(TAG, "Error in onCreate: " + e.getMessage(), e);
             try {
