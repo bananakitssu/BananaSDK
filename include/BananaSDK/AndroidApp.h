@@ -4,13 +4,9 @@
 #include <string>
 #include <unordered_map>
 #include <vector>
-#include <android/log.h>
+#include "Log.h"
 #include <android/native_window.h>
 #include <android_native_app_glue.h>
-
-#define _BANANA_TAG "BananaSDK"
-#define _BANANA_LOGI(...) __android_log_print(ANDROID_LOG_INFO,  _BANANA_TAG, __VA_ARGS__)
-#define _BANANA_LOGE(...) __android_log_print(ANDROID_LOG_ERROR, _BANANA_TAG, __VA_ARGS__)
 
 #define startAndroid(AppClass)                            \
     extern "C" {                                          \

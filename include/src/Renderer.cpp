@@ -1,4 +1,5 @@
 #include "BananaSDK/Renderer.h"
+#include "BananaSDK/Log.h"
 
 Renderer::Renderer()
     : m_Display(EGL_NO_DISPLAY),
