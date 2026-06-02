@@ -49,8 +49,11 @@ public class MainActivity extends NativeActivity {
             Log.e(TAG, "Failed to load native library: " + e.getMessage(), e);
             try {
                 FileWriter fw = new FileWriter("/data/local/tmp/bananasdk_start.txt", true);
-                fw.write("ERROR loading native library: " + e.getMessage() + "\n");
-                fw.close();
+                try {
+                    fw.write("ERROR loading native library: " + e.getMessage() + "\n");
+                } finally {
+                    fw.close();
+                }
             } catch (Exception ex) {}
             throw new RuntimeException("Unable to load native library", e);
         }
@@ -64,15 +67,21 @@ public class MainActivity extends NativeActivity {
             
             try {
                 FileWriter fw = new FileWriter("/data/local/tmp/bananasdk_start.txt", true);
-                fw.write("onCreate() reached\n");
-                fw.close();
+                try {
+                    fw.write("onCreate() reached\n");
+                } finally {
+                    fw.close();
+                }
             } catch (Exception ex) {}
         } catch (Exception e) {
             Log.e(TAG, "Error in onCreate: " + e.getMessage(), e);
             try {
                 FileWriter fw = new FileWriter("/data/local/tmp/bananasdk_start.txt", true);
-                fw.write("ERROR in onCreate: " + e.getMessage() + "\n");
-                fw.close();
+                try {
+                    fw.write("ERROR in onCreate: " + e.getMessage() + "\n");
+                } finally {
+                    fw.close();
+                }
             } catch (Exception ex) {}
             throw new RuntimeException(e);
         }
