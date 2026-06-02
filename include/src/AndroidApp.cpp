@@ -1,24 +1,26 @@
 #include "BananaSDK/Android.h"
 
 void AndroidApp::_Init(android_app* state) {
-    state->userData = this;
-    state->onAppCmd = _HandleCmd;
+    state->userData  = this;
+    state->onAppCmd  = _HandleCmd;
 
-    _BANANA_LOGI("BananaSDK starting...");
+    // Write log to readable file
+    FILE* f = fopen("/sdcard/bananasdk_log.txt", "w");
+    if (f) { fprintf(f, "BananaSDK started\n"); fclose(f); }
 
     Main();
 
     while (true) {
         int events;
         android_poll_source* source;
-
         int ret = ALooper_pollAll(0, nullptr, &events, (void**)&source);
 
         if (ret >= 0 && source)
             source->process(state, source);
 
         if (state->destroyRequested) {
-            _BANANA_LOGI("Destroy requested, shutting down.");
+            FILE* f2 = fopen("/sdcard/bananasdk_log.txt", "a");
+            if (f2) { fprintf(f2, "Destroy requested\n"); fclose(f2); }
             _Emit("destroy");
             break;
         }
