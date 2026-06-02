@@ -5,15 +5,19 @@
 #include <unordered_map>
 #include <vector>
 #include <android/log.h>
+#include <android/native_window.h>
+#include <android_native_app_glue.h>
 
 #define _BANANA_TAG "BananaSDK"
 #define _BANANA_LOGI(...) __android_log_print(ANDROID_LOG_INFO,  _BANANA_TAG, __VA_ARGS__)
 #define _BANANA_LOGE(...) __android_log_print(ANDROID_LOG_ERROR, _BANANA_TAG, __VA_ARGS__)
 
-#define startAndroid(AppClass)                           \
-    extern "C" void android_main(android_app* _state) { \
-        AppClass _app;                                   \
-        _app._Init(_state);                              \
+#define startAndroid(AppClass)                            \
+    extern "C" {                                          \
+        void android_main(android_app* _state) {          \
+            AppClass _app;                                \
+            _app._Init(_state);                           \
+        }                                                 \
     }
 
 namespace _BananaInternal {
@@ -36,12 +40,10 @@ namespace _BananaInternal {
         void remove(const std::string& event, int id = -1) {
             auto it = m_Map.find(event);
             if (it == m_Map.end()) return;
-
             if (id == -1) {
                 it->second.clear();
                 return;
             }
-
             auto& vec = it->second;
             vec.erase(
                 std::remove_if(vec.begin(), vec.end(),
@@ -84,12 +86,14 @@ public:
         m_Listeners.remove(event, -1);
     }
 
+    ANativeWindow* getWindow() const { return m_Window; }
+
     void _Init(android_app* state);
     void _Emit(const std::string& event) { m_Listeners.emit(event); }
 
-    ANativeWindow* getWindow() const { return m_Window; }
+    ANativeWindow* m_Window = nullptr;
 
 private:
     _BananaInternal::ListenerMap m_Listeners;
-    ANativeWindow* m_Window = nullptr;
     static void _HandleCmd(android_app* state, int32_t cmd);
+};
