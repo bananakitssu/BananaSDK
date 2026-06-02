@@ -10,27 +10,41 @@ public class MainActivity extends NativeActivity {
 
     static {
         try {
-            // Write to file IMMEDIATELY to see if we even get here
-            try {
-                FileWriter fw = new FileWriter("/sdcard/bananasdk_start.txt");
-                fw.write("MainActivity class loading...\n");
-                fw.close();
-            } catch (Exception e) {
-                // Silently fail
+            // Try multiple log paths
+            String[] logPaths = {
+                "/sdcard/bananasdk_start.txt",
+                "/storage/emulated/0/bananasdk_start.txt",
+                "/data/data/com.bananasdk.app/bananasdk_start.txt",
+                "/data/local/tmp/bananasdk_start.txt"
+            };
+            
+            String logFile = null;
+            for (String path : logPaths) {
+                try {
+                    FileWriter fw = new FileWriter(path);
+                    fw.write("MainActivity class loading...\n");
+                    fw.close();
+                    logFile = path;
+                    break;
+                } catch (Exception e) {
+                    // Try next path
+                }
             }
 
             System.loadLibrary("bananasdk");
             Log.i(TAG, "Native library loaded successfully");
             
-            try {
-                FileWriter fw = new FileWriter("/sdcard/bananasdk_start.txt", true);
-                fw.write("Native library loaded successfully\n");
-                fw.close();
-            } catch (Exception ex) {}
+            if (logFile != null) {
+                try {
+                    FileWriter fw = new FileWriter(logFile, true);
+                    fw.write("Native library loaded successfully\n");
+                    fw.close();
+                } catch (Exception ex) {}
+            }
         } catch (UnsatisfiedLinkError e) {
             Log.e(TAG, "Failed to load native library: " + e.getMessage(), e);
             try {
-                FileWriter fw = new FileWriter("/sdcard/bananasdk_start.txt", true);
+                FileWriter fw = new FileWriter("/data/local/tmp/bananasdk_start.txt", true);
                 fw.write("ERROR loading native library: " + e.getMessage() + "\n");
                 fw.close();
             } catch (Exception ex) {}
@@ -45,14 +59,14 @@ public class MainActivity extends NativeActivity {
             Log.i(TAG, "MainActivity created successfully");
             
             try {
-                FileWriter fw = new FileWriter("/sdcard/bananasdk_start.txt", true);
+                FileWriter fw = new FileWriter("/data/local/tmp/bananasdk_start.txt", true);
                 fw.write("onCreate() reached\n");
                 fw.close();
             } catch (Exception ex) {}
         } catch (Exception e) {
             Log.e(TAG, "Error in onCreate: " + e.getMessage(), e);
             try {
-                FileWriter fw = new FileWriter("/sdcard/bananasdk_start.txt", true);
+                FileWriter fw = new FileWriter("/data/local/tmp/bananasdk_start.txt", true);
                 fw.write("ERROR in onCreate: " + e.getMessage() + "\n");
                 fw.close();
             } catch (Exception ex) {}
