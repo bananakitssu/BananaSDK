@@ -10,12 +10,15 @@ public class MainActivity extends NativeActivity {
 
     static {
         try {
-            // Try multiple log paths
+            // Try multiple log paths - including /documents for Android 14+
             String[] logPaths = {
                 "/sdcard/bananasdk_start.txt",
                 "/storage/emulated/0/bananasdk_start.txt",
+                "/storage/emulated/0/Documents/bananasdk_start.txt",
                 "/data/data/com.bananasdk.app/bananasdk_start.txt",
-                "/data/local/tmp/bananasdk_start.txt"
+                "/data/local/tmp/bananasdk_start.txt",
+                "/storage/Documents/bananasdk_start.txt",
+                "/documents/bananasdk_start.txt"
             };
             
             String logFile = null;
@@ -25,6 +28,7 @@ public class MainActivity extends NativeActivity {
                     fw.write("MainActivity class loading...\n");
                     fw.close();
                     logFile = path;
+                    Log.i(TAG, "Using log file: " + path);
                     break;
                 } catch (Exception e) {
                     // Try next path
