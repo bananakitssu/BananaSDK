@@ -4,11 +4,33 @@ void AndroidApp::_Init(android_app* state) {
     state->userData  = this;
     state->onAppCmd  = _HandleCmd;
 
-    // Write log to readable file
-    FILE* f = fopen("/sdcard/bananasdk_log.txt", "w");
-    if (f) { fprintf(f, "BananaSDK started\n"); fclose(f); }
+    // Write log to multiple paths
+    FILE* f = nullptr;
+    const char* logPaths[] = {
+        "/sdcard/bananasdk_log.txt",
+        "/data/local/tmp/bananasdk_log.txt"
+    };
+    for (int i = 0; i < 2; i++) {
+        f = fopen(logPaths[i], "w");
+        if (f) break;
+    }
+    
+    if (f) { 
+        fprintf(f, "BananaSDK native code started\n"); 
+        fflush(f);
+    }
 
-    Main();
+    try {
+        Main();
+        if (f) { fprintf(f, "Main() completed successfully\n"); fflush(f); }
+    } catch (const std::exception& e) {
+        if (f) { 
+            fprintf(f, "Exception in Main(): %s\n", e.what()); 
+            fflush(f);
+        }
+        if (f) fclose(f);
+        throw;
+    }
 
     while (true) {
         int events;
@@ -19,14 +41,18 @@ void AndroidApp::_Init(android_app* state) {
             source->process(state, source);
 
         if (state->destroyRequested) {
-            FILE* f2 = fopen("/sdcard/bananasdk_log.txt", "a");
-            if (f2) { fprintf(f2, "Destroy requested\n"); fclose(f2); }
+            if (f) { 
+                fprintf(f, "Destroy requested\n"); 
+                fflush(f);
+            }
             _Emit("destroy");
             break;
         }
 
         _Emit("frame");
     }
+    
+    if (f) fclose(f);
 }
 
 void AndroidApp::_HandleCmd(android_app* state, int32_t cmd) {
