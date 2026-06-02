@@ -24,6 +24,21 @@ jobs:
       - name: Install NDK and CMake
         run: sdkmanager "ndk;25.2.9519653" "cmake;3.22.1"
 
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v3
+
+      - name: Generate Gradle wrapper
+        run: gradle wrapper
+
+      - name: Make gradlew executable  
+        run: chmod +x gradlew
+
+      - name: Make gradlew executable
+        run: |
+          cd $GITHUB_WORKSPACE
+          gradle wrapper
+          chmod +x gradlew
+
       - name: Build debug APK
         run: ./gradlew assembleDebug
 
