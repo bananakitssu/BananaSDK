@@ -1,21 +1,29 @@
 #include <BananaSDK/Android.h>
+#include <BananaSDK/Renderer.h>
 
 class MyApp : public AndroidApp {
 public:
+    Renderer renderer;
+
     void Main() override {
 
-        addListener("resume", []() {
-            _BANANA_LOGI("App resumed!");
+        addListener("windowready", [this]() {
+            renderer.Init(getWindow());
+            // Yellow! Like a banana 🍌
+            renderer.SetClearColor(0.96f, 0.77f, 0.09f);
         });
 
-        addListener("pause", []() {
-            _BANANA_LOGI("App paused!");
+        addListener("frame", [this]() {
+            renderer.DrawFrame();
         });
 
-        addListener("destroy", []() {
-            _BANANA_LOGI("App destroyed!");
+        addListener("windowlost", [this]() {
+            renderer.Destroy();
         });
 
+        addListener("destroy", [this]() {
+            renderer.Destroy();
+        });
     }
 };
 

@@ -87,7 +87,9 @@ public:
     void _Init(android_app* state);
     void _Emit(const std::string& event) { m_Listeners.emit(event); }
 
+    ANativeWindow* getWindow() const { return m_Window; }
+
 private:
     _BananaInternal::ListenerMap m_Listeners;
+    ANativeWindow* m_Window = nullptr;
     static void _HandleCmd(android_app* state, int32_t cmd);
-};
