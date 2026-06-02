@@ -1,6 +1,7 @@
 #include <signal.h>
 #include <cstring>
 #include <cstdio>
+#include <cstdlib>
 #include <android_native_app_glue.h>
 #include "BananaSDK/Android.h"
 
