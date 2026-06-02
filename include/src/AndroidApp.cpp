@@ -1,6 +1,26 @@
+#include <signal.h>
+#include <cstring>
+#include <cstdio>
+#include <android_native_app_glue.h>
 #include "BananaSDK/Android.h"
 
+// Global log file for crash detection
+FILE* g_crashLog = nullptr;
+
+void signalHandler(int sig) {
+    if (g_crashLog) {
+        fprintf(g_crashLog, "SIGNAL %d received - CRASH!\n", sig);
+        fflush(g_crashLog);
+        fclose(g_crashLog);
+    }
+    _exit(1);
+}
+
 void AndroidApp::_Init(android_app* state) {
+    // Setup crash handler
+    signal(SIGSEGV, signalHandler);
+    signal(SIGABRT, signalHandler);
+    
     state->userData  = this;
     state->onAppCmd  = _HandleCmd;
 
@@ -15,17 +35,27 @@ void AndroidApp::_Init(android_app* state) {
         if (f) break;
     }
     
+    g_crashLog = f;
+    
     if (f) { 
         fprintf(f, "BananaSDK native code started\n"); 
         fflush(f);
     }
 
     try {
+        if (f) { fprintf(f, "Calling Main()...\n"); fflush(f); }
         Main();
         if (f) { fprintf(f, "Main() completed successfully\n"); fflush(f); }
     } catch (const std::exception& e) {
         if (f) { 
             fprintf(f, "Exception in Main(): %s\n", e.what()); 
+            fflush(f);
+        }
+        if (f) fclose(f);
+        throw;
+    } catch (...) {
+        if (f) { 
+            fprintf(f, "Unknown exception in Main()\n"); 
             fflush(f);
         }
         if (f) fclose(f);
