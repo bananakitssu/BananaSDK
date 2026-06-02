@@ -12,7 +12,7 @@ void AndroidApp::_Init(android_app* state) {
         int events;
         android_poll_source* source;
 
-        int ret = ALooper_pollAll(-1, nullptr, &events, (void**)&source);
+        int ret = ALooper_pollAll(0, nullptr, &events, (void**)&source);
 
         if (ret >= 0 && source)
             source->process(state, source);
@@ -22,6 +22,8 @@ void AndroidApp::_Init(android_app* state) {
             _Emit("destroy");
             break;
         }
+
+        _Emit("frame");
     }
 }
 
@@ -36,7 +38,11 @@ void AndroidApp::_HandleCmd(android_app* state, int32_t cmd) {
         case APP_CMD_START:       self->_Emit("start");       break;
         case APP_CMD_GAINED_FOCUS: self->_Emit("focus");      break;
         case APP_CMD_LOST_FOCUS:  self->_Emit("blur");        break;
-        case APP_CMD_INIT_WINDOW: self->_Emit("windowready"); break;
+        case APP_CMD_INIT_WINDOW:
+            self->m_Window = state->window;
+            _BANANA_LOGI("windowready");
+            self->_Emit("windowready");
+            break;
         case APP_CMD_TERM_WINDOW: self->_Emit("windowlost");  break;
         case APP_CMD_DESTROY:     self->_Emit("destroy");     break;
         default: break;
