@@ -17,6 +17,7 @@ target_include_directories(bananasdk PRIVATE
 )
 
 target_link_libraries(bananasdk
+    -u ANativeActivity_onCreate
     native_app_glue
     android
     log
