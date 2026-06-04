@@ -29,7 +29,7 @@ private:
     std::string m_Text;
     float m_FontSize = 32.0f;
 
-    float m_R  = 0.949f, m_G  = 0.949f, m_B  = 0.969f, m_A = 1.0f;
+    float m_R = 0.80f, m_G = 0.80f, m_B = 0.82f, m_A = 1.0f;
     float m_TR = 0.0f,   m_TG = 0.478f, m_TB = 1.0f,   m_TA = 1.0f;
     float m_Radius = 9999.0f;
 

@@ -25,6 +25,7 @@ void AndroidApp::_Init(android_app* state) {
     m_State          = state;
     state->userData  = this;
     state->onAppCmd  = _HandleCmd;
+    state->onInputEvent = _HandleInput;
 
     // Write log to multiple paths
     FILE* f = nullptr;
@@ -107,4 +108,18 @@ void AndroidApp::_HandleCmd(android_app* state, int32_t cmd) {
         case APP_CMD_DESTROY:     self->_Emit("destroy");     break;
         default: break;
     }
+}
+
+int32_t AndroidApp::_HandleInput(android_app* state, AInputEvent* event) {
+    AndroidApp* self = static_cast<AndroidApp*>(state->userData);
+    if (!self) return 0;
+    if (AInputEvent_getType(event) == AINPUT_EVENT_TYPE_MOTION) {
+        int32_t action = AMotionEvent_getAction(event) & AMOTION_EVENT_ACTION_MASK;
+        self->m_TouchX = AMotionEvent_getX(event, 0);
+        self->m_TouchY = AMotionEvent_getY(event, 0);
+        if (action == AMOTION_EVENT_ACTION_DOWN) self->_Emit("touchstart");
+        else if (action == AMOTION_EVENT_ACTION_UP) self->_Emit("touchend");
+        return 1;
+    }
+    return 0;
 }
