@@ -28,6 +28,10 @@ public:
             });
         });
 
+        addListener("touchstart", [this]() {
+    myButton.OnTouch(GetTouchX(), GetTouchY());
+});
+
         addListener("frame", [this]() {
             renderer.BeginFrame();
             myButton.Draw(ui);
