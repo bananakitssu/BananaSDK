@@ -5,3 +5,5 @@ Preview of testing the SDK on Android:
     ![Preview](images/preview.png)
     
 It's basically just a yellow screen for now
+
+The SDK for Android is being tested using a Debug APK.
