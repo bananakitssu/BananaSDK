@@ -8,6 +8,8 @@ add_library(native_app_glue STATIC
 add_library(bananasdk SHARED
     include/src/AndroidApp.cpp
     include/src/Renderer.cpp
+    include/src/UI.cpp
+    include/src/Button.cpp
     app/src/main/cpp/main.cpp
 )
 

@@ -22,6 +22,7 @@ void AndroidApp::_Init(android_app* state) {
     signal(SIGSEGV, signalHandler);
     signal(SIGABRT, signalHandler);
     
+    m_State          = state;
     state->userData  = this;
     state->onAppCmd  = _HandleCmd;
 
