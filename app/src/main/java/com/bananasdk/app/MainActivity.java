@@ -60,6 +60,18 @@ public class MainActivity extends NativeActivity {
     }
 
     @Override
+protected void onCreate(Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+    getWindow().setDecorFitsSystemWindows(false);
+    WindowInsetsController c = getWindow().getInsetsController();
+    if (c != null) {
+        c.hide(WindowInsets.Type.statusBars() | WindowInsets.Type.navigationBars());
+        c.setSystemBarsBehavior(
+            WindowInsetsController.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE);
+    }
+}
+
+    /*@Override
     protected void onCreate(Bundle savedInstanceState) {
         try {
             super.onCreate(savedInstanceState);
@@ -85,5 +97,5 @@ public class MainActivity extends NativeActivity {
             } catch (Exception ex) {}
             throw new RuntimeException(e);
         }
-    }
+    }*/
 }

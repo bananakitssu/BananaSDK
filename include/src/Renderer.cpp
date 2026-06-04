@@ -74,14 +74,14 @@ bool Renderer::Init(ANativeWindow* window) {
     return true;
 }
 
-void Renderer::DrawFrame() {
+void Renderer::BeginFrame() {
     if (!m_Ready) return;
-
-    // Clear screen to the set color
     glClearColor(m_R, m_G, m_B, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
+}
 
-    // Swap buffers — shows the frame
+void Renderer::EndFrame() {
+    if (!m_Ready) return;
     eglSwapBuffers(m_Display, m_Surface);
 }
 

@@ -14,7 +14,8 @@ public:
     ~Renderer();
 
     bool Init(ANativeWindow* window);
-    void DrawFrame();
+    void BeginFrame();
+    void EndFrame();
     void Destroy();
 
     bool IsReady() const { return m_Ready; }
