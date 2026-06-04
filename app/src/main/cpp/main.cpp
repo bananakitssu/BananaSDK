@@ -29,8 +29,9 @@ public:
         });
 
         addListener("frame", [this]() {
-            renderer.DrawFrame();
+            renderer.BeginFrame();
             myButton.Draw(ui);
+            renderer.EndFrame();
         });
 
         addListener("windowlost", [this]() {
