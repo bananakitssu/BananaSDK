@@ -4,6 +4,8 @@ import android.app.NativeActivity;
 import android.os.Bundle;
 import android.util.Log;
 import java.io.FileWriter;
+import android.view.WindowInsets;
+import android.view.WindowInsetsController;
 
 public class MainActivity extends NativeActivity {
     private static final String TAG = "BananaSDK";
