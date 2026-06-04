@@ -21,6 +21,7 @@ public:
     // Interaction
     void SetOnClick(std::function<void()> cb);
     bool OnTouch(float x, float y); // returns true if tapped inside
+    void OnRelease();
 
     // Rendering
     void Draw(UIRenderer& ui);
@@ -36,8 +37,6 @@ private:
     bool  m_IsDown    = false;
     float m_PressAnim = 0.0f;
     std::chrono::steady_clock::time_point m_LastTime;
-
-    void OnRelease();
 
     std::function<void()> m_OnClick;
 };
