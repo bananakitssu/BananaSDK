@@ -32,6 +32,10 @@ public:
     myButton.OnTouch(GetTouchX(), GetTouchY());
 });
 
+        addListener("touchend", [this]() {
+    myButton.OnRelease();
+});
+
         addListener("frame", [this]() {
             renderer.BeginFrame();
             myButton.Draw(ui);
