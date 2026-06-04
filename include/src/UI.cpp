@@ -22,8 +22,8 @@ uniform vec2  u_size;
 uniform float u_radius;
 uniform float u_sh;
 
-float sdfRoundRect(vec2 p, vec2 half, float r) {
-    vec2 q = abs(p) - half + r;
+float sdfRoundRect(vec2 p, vec2 halfSize, float r) {
+    vec2 q = abs(p) - halfSize + r;
     return length(max(q, 0.0)) - r;
 }
 
