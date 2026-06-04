@@ -1,108 +1,47 @@
 #include <BananaSDK/Android.h>
 #include <BananaSDK/Renderer.h>
-#include <cstdio>
+#include <BananaSDK/UI.h>
+#include <BananaSDK/Button.h>
 
 class MyApp : public AndroidApp {
 public:
     Renderer renderer;
+    UIRenderer ui;
+    Button myButton;
 
     void Main() override {
-        FILE* f = fopen("/data/local/tmp/bananasdk_log.txt", "a");
-        if (f) {
-            fprintf(f, "[MyApp::Main] Starting Main()\n");
-            fflush(f);
-        }
 
-        try {
-            addListener("windowready", [this, f]() {
-                if (f) {
-                    FILE* flog = fopen("/data/local/tmp/bananasdk_log.txt", "a");
-                    if (flog) {
-                        fprintf(flog, "[windowready] Listener called\n");
-                        fflush(flog);
-                        fclose(flog);
-                    }
-                }
-                
-                if (f) {
-                    FILE* flog = fopen("/data/local/tmp/bananasdk_log.txt", "a");
-                    if (flog) {
-                        fprintf(flog, "[windowready] About to call renderer.Init()\n");
-                        fflush(flog);
-                        fclose(flog);
-                    }
-                }
-                
-                renderer.Init(getWindow());
-                
-                if (f) {
-                    FILE* flog = fopen("/data/local/tmp/bananasdk_log.txt", "a");
-                    if (flog) {
-                        fprintf(flog, "[windowready] renderer.Init() completed\n");
-                        fflush(flog);
-                        fclose(flog);
-                    }
-                }
-                
-                // Yellow! Like a banana 🍌
-                renderer.SetClearColor(0.96f, 0.77f, 0.09f);
-                
-                if (f) {
-                    FILE* flog = fopen("/data/local/tmp/bananasdk_log.txt", "a");
-                    if (flog) {
-                        fprintf(flog, "[windowready] SetClearColor completed\n");
-                        fflush(flog);
-                        fclose(flog);
-                    }
-                }
+        addListener("windowready", [this]() {
+            renderer.Init(getWindow());
+            renderer.SetClearColor(0.96f, 0.77f, 0.09f);
+
+            int w = ANativeWindow_getWidth(getWindow());
+            int h = ANativeWindow_getHeight(getWindow());
+            ui.Init(getActivity(), w, h);
+
+            myButton = Button(100, 300, 400, 80, "Hello Banana");
+            myButton.SetColor(0.1f, 0.1f, 0.1f);
+            myButton.SetTextColor(1.0f, 1.0f, 1.0f);
+            myButton.SetRadius(20.0f);
+            myButton.SetOnClick([]() {
+                _BANANA_LOGI("Button clicked!");
             });
+        });
 
-            if (f) {
-                fprintf(f, "[MyApp::Main] Added windowready listener\n");
-                fflush(f);
-            }
+        addListener("frame", [this]() {
+            renderer.DrawFrame();
+            myButton.Draw(ui);
+        });
 
-            addListener("frame", [this, f]() {
-                renderer.DrawFrame();
-            });
+        addListener("windowlost", [this]() {
+            ui.Destroy();
+            renderer.Destroy();
+        });
 
-            if (f) {
-                fprintf(f, "[MyApp::Main] Added frame listener\n");
-                fflush(f);
-            }
-
-            addListener("windowlost", [this, f]() {
-                renderer.Destroy();
-            });
-
-            if (f) {
-                fprintf(f, "[MyApp::Main] Added windowlost listener\n");
-                fflush(f);
-            }
-
-            addListener("destroy", [this, f]() {
-                renderer.Destroy();
-            });
-
-            if (f) {
-                fprintf(f, "[MyApp::Main] Main() completed successfully\n");
-                fflush(f);
-            }
-        } catch (const std::exception& e) {
-            if (f) {
-                fprintf(f, "[MyApp::Main] Exception: %s\n", e.what());
-                fflush(f);
-            }
-            throw;
-        } catch (...) {
-            if (f) {
-                fprintf(f, "[MyApp::Main] Unknown exception\n");
-                fflush(f);
-            }
-            throw;
-        }
-
-        if (f) fclose(f);
+        addListener("destroy", [this]() {
+            ui.Destroy();
+            renderer.Destroy();
+        });
     }
 };
 
