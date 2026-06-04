@@ -7,6 +7,7 @@
 #include "Log.h"
 #include <android/native_window.h>
 #include <android_native_app_glue.h>
+#include <android/input.h>
 
 #define startAndroid(AppClass)                            \
     extern "C" {                                          \
@@ -82,6 +83,11 @@ public:
         m_Listeners.remove(event, -1);
     }
 
+    float GetTouchX() const { return m_TouchX; }
+    float GetTouchY() const { return m_TouchY; }
+
+    float m_TouchX = 0, m_TouchY = 0;
+
     ANativeWindow* getWindow() const { return m_Window; }
     ANativeActivity* GetActivity() const { return m_State->activity; }
     ANativeActivity* getActivity() const { return m_State->activity; }
@@ -94,5 +100,6 @@ public:
 private:
     _BananaInternal::ListenerMap m_Listeners;
     static void _HandleCmd(android_app* state, int32_t cmd);
+    static int32_t _HandleInput(android_app*, AInputEvent*);
     android_app* m_State = nullptr;
 };
