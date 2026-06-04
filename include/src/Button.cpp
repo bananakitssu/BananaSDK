@@ -1,4 +1,5 @@
 #include "BananaSDK/Button.h"
+#include <algorithm>
 
 Button::Button(float x, float y, float w, float h, const std::string& text)
     : m_X(x), m_Y(y), m_W(w), m_H(h), m_Text(text) {}
@@ -21,9 +22,9 @@ bool Button::OnTouch(float x, float y) {
 }
 
 void Button::Draw(UIRenderer& ui) {
-    ui.DrawRect(m_X, m_Y, m_W, m_H, m_R, m_G, m_B, m_A, m_Radius);
+    float r = std::min(m_Radius, std::min(m_W, m_H) / 2.0f);
+    ui.DrawRect(m_X, m_Y, m_W, m_H, m_R, m_G, m_B, m_A, r);
     if (!m_Text.empty()) {
-        // Vertically centered, small left padding
         float ty = m_Y + (m_H - m_FontSize) * 0.5f;
         ui.DrawText(m_X + 12.0f, ty, m_Text, m_TR, m_TG, m_TB, m_TA, m_FontSize);
     }
