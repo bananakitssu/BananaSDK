@@ -61,7 +61,13 @@ public class MainActivity extends NativeActivity {
         }
     }
 
-    @Override
+@Override
+protected void onCreate(Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+    getWindow().setStatusBarColor(0xFF000000); // black, change to whatever color you want
+}
+
+    /*@Override
 protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     getWindow().setDecorFitsSystemWindows(false);
@@ -71,7 +77,7 @@ protected void onCreate(Bundle savedInstanceState) {
         c.setSystemBarsBehavior(
             WindowInsetsController.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE);
     }
-}
+}*/
 
     /*@Override
     protected void onCreate(Bundle savedInstanceState) {
