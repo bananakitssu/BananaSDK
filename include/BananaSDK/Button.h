@@ -2,6 +2,7 @@
 #include "UI.h"
 #include <string>
 #include <functional>
+#include <chrono>
 
 class Button {
 public:
@@ -32,7 +33,11 @@ private:
     float m_R = 0.80f, m_G = 0.80f, m_B = 0.82f, m_A = 1.0f;
     float m_TR = 0.0f,   m_TG = 0.478f, m_TB = 1.0f,   m_TA = 1.0f;
     float m_Radius = 9999.0f;
-    bool m_Pressed = false;
+    bool  m_IsDown    = false;
+    float m_PressAnim = 0.0f;
+    std::chrono::steady_clock::time_point m_LastTime;
+
+    void OnRelease();
 
     std::function<void()> m_OnClick;
 };
