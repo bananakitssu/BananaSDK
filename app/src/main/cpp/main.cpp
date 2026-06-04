@@ -19,7 +19,7 @@ public:
             int h = ANativeWindow_getHeight(getWindow());
             ui.Init(getActivity(), w, h);
 
-            myButton = Button(20, 50, 50, 25, "Click");
+            myButton = Button(20, 60, 250, 70, "Click");
             //myButton.SetColor(1.0f, 0.0f, 0.0f);
             //myButton.SetTextColor(1.0f, 1.0f, 1.0f);
             //myButton.SetRadius(20.0f);
