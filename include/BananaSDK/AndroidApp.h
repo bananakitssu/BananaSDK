@@ -92,7 +92,7 @@ public:
     ANativeActivity* GetActivity() const { return m_State->activity; }
     ANativeActivity* getActivity() const { return m_State->activity; }
 
-    void _Init(android_app* state);
+    virtual void _Init(android_app* state);
     void _Emit(const std::string& event) { m_Listeners.emit(event); }
 
     ANativeWindow* m_Window = nullptr;

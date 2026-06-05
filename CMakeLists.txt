@@ -10,6 +10,11 @@ add_library(bananasdk SHARED
     include/src/Renderer.cpp
     include/src/UI.cpp
     include/src/Button.cpp
+    include/src/AndroidAppDev.cpp
+    include/src/Box.cpp
+    include/src/PopupMenu.cpp
+    include/src/ContextMenu.cpp
+    include/src/AndroidAppDev.cpp
     app/src/main/cpp/main.cpp
 )
 
