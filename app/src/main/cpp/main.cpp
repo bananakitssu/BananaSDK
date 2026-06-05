@@ -3,7 +3,7 @@
 #include <BananaSDK/UI.h>
 #include <BananaSDK/Button.h>
 
-class MyApp : public AndroidApp {
+class MyApp : public AndroidAppDev {
 public:
     Renderer renderer;
     UIRenderer ui;
@@ -39,6 +39,7 @@ public:
         addListener("frame", [this]() {
             renderer.BeginFrame();
             myButton.Draw(ui);
+            DrawDevOverlay();
             renderer.EndFrame();
         });
 
