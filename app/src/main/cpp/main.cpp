@@ -19,7 +19,7 @@ public:
             int number = 20.0f;
             int w = ANativeWindow_getWidth(getWindow());
             int h = ANativeWindow_getHeight(getWindow());
-            ui.Init(getActivity(), w, h);
+            ui.Init(getActivity(), this, renderer, w, h);
 
             myButton = Button(20, 60, 250, 70, "Click");
             //myButton.SetColor(1.0f, 0.0f, 0.0f);
@@ -40,12 +40,12 @@ public:
             myButton.OnRelease();
         });
 
-        addListener("frame", [this]() {
+        /*addListener("frame", [this]() {
             renderer.BeginFrame();
             myButton.Draw(ui);
             DrawDevOverlay();
             renderer.EndFrame();
-        });
+        });*/
 
         addListener("windowlost", [this]() {
             ui.Destroy();

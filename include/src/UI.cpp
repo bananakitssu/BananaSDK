@@ -1,7 +1,11 @@
 #include "BananaSDK/UI.h"
 #include "BananaSDK/Log.h"
+#include "BananaSDK/AndroidApp.h"
+#include "BananaSDK/Renderer.h"
 #include <jni.h>
 #include <vector>
+#include <string>
+#include <any>
 
 // ── Shaders ──────────────────────────────────────────────────────────────────
 
@@ -99,7 +103,7 @@ GLuint UIRenderer::CreateProgram(const char* vert, const char* frag) {
 
 // ── Init / Destroy ────────────────────────────────────────────────────────────
 
-bool UIRenderer::Init(ANativeActivity* activity, int w, int h) {
+bool UIRenderer::Init(ANativeActivity* activity, AndroidApp* app, Renderer* renderer, int w, int h) {
     m_Activity = activity;
     m_Width    = w;
     m_Height   = h;
@@ -112,6 +116,13 @@ bool UIRenderer::Init(ANativeActivity* activity, int w, int h) {
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     m_Ready = true;
+    app.addListener("frame", [this]() {
+        renderer.BeginFrame();
+        for (std::any element : app.getElements()) {
+            element.Draw(this);
+        }
+        renderer.EndFrame();
+    });
     _BANANA_LOGI("UIRenderer ready (%dx%d)", w, h);
     return true;
 }
