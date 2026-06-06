@@ -15,7 +15,7 @@ public:
             renderer.Init(getWindow());
             renderer.SetClearColor(0.96f, 0.77f, 0.09f);
 
-            int number = 20;
+            int number = 20.0f;
             int w = ANativeWindow_getWidth(getWindow());
             int h = ANativeWindow_getHeight(getWindow());
             ui.Init(getActivity(), w, h);
@@ -26,6 +26,7 @@ public:
             //myButton.SetRadius(20.0f);
             myButton.SetOnClick([&]() {
                 number--;
+                myButton.SetRadius(number);
                 _BANANA_LOGI("Button clicked!");
             });
         });
