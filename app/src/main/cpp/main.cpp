@@ -8,6 +8,7 @@ public:
     Renderer renderer;
     UIRenderer ui;
     Button myButton;
+    float buttonRadius = 20.0f;
 
     void Main() override {
 
@@ -32,12 +33,12 @@ public:
         });
 
         addListener("touchstart", [this]() {
-    myButton.OnTouch(GetTouchX(), GetTouchY());
-});
+            myButton.OnTouch(GetTouchX(), GetTouchY());
+        });
 
         addListener("touchend", [this]() {
-    myButton.OnRelease();
-});
+            myButton.OnRelease();
+        });
 
         addListener("frame", [this]() {
             renderer.BeginFrame();
