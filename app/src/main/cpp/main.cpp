@@ -8,6 +8,7 @@ public:
     Renderer renderer;
     UIRenderer ui;
     Button myButton;
+    int frameCount = 0;
 
     void Main() override {
 
@@ -15,32 +16,35 @@ public:
             renderer.Init(getWindow());
             renderer.SetClearColor(0.96f, 0.77f, 0.09f);
 
-            int number = 20;
             int w = ANativeWindow_getWidth(getWindow());
             int h = ANativeWindow_getHeight(getWindow());
             ui.Init(getActivity(), w, h);
 
             myButton = Button(20, 60, 250, 70, "Click");
-            //myButton.SetColor(1.0f, 0.0f, 0.0f);
-            //myButton.SetTextColor(1.0f, 1.0f, 1.0f);
-            //myButton.SetRadius(20.0f);
-            myButton.SetOnClick([&]() {
-                number--;
+            myButton.SetOnClick([]() {
                 _BANANA_LOGI("Button clicked!");
             });
         });
 
         addListener("touchstart", [this]() {
-    myButton.OnTouch(GetTouchX(), GetTouchY());
-});
+            myButton.OnTouch(GetTouchX(), GetTouchY());
+        });
 
         addListener("touchend", [this]() {
-    myButton.OnRelease();
-});
+            myButton.OnRelease();
+        });
 
         addListener("frame", [this]() {
+            frameCount++;
             renderer.BeginFrame();
             myButton.Draw(ui);
+            
+            // DEBUG: Draw frame counter and shake status
+            ui.DrawText(10, 10, "Frame: " + std::to_string(frameCount), 
+                       1.0f, 1.0f, 1.0f, 1.0f, 20.0f);
+            ui.DrawText(10, 40, "Shake to open menu", 
+                       1.0f, 1.0f, 1.0f, 1.0f, 20.0f);
+            
             DrawDevOverlay();
             renderer.EndFrame();
         });
