@@ -24,7 +24,7 @@ public:
             //myButton.SetColor(1.0f, 0.0f, 0.0f);
             //myButton.SetTextColor(1.0f, 1.0f, 1.0f);
             //myButton.SetRadius(20.0f);
-            myButton.SetOnClick([]() {
+            myButton.SetOnClick([&]() {
                 number--;
                 _BANANA_LOGI("Button clicked!");
             });
