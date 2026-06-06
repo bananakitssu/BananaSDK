@@ -2,6 +2,7 @@
 
 #include <functional>
 #include <string>
+#include <any>
 #include <unordered_map>
 #include <vector>
 #include "Log.h"
@@ -83,10 +84,19 @@ public:
         m_Listeners.remove(event, -1);
     }
 
+    void addElement(const std::any& element) {
+        m_Elements.push_back(element);
+    }
+
+    const std::vector<std::any>& getElements() const { 
+        return m_Elements; 
+    }
+
     float GetTouchX() const { return m_TouchX; }
     float GetTouchY() const { return m_TouchY; }
 
     float m_TouchX = 0, m_TouchY = 0;
+    std::vector<std::any> m_Elements;
 
     ANativeWindow* getWindow() const { return m_Window; }
     ANativeActivity* GetActivity() const { return m_State->activity; }
