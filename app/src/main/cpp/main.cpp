@@ -8,7 +8,7 @@ public:
     Renderer renderer;
     UIRenderer ui;
     Button myButton;
-    int frameCount = 0;
+    float buttonRadius = 20.0f;
 
     void Main() override {
 
@@ -21,8 +21,12 @@ public:
             ui.Init(getActivity(), w, h);
 
             myButton = Button(20, 60, 250, 70, "Click");
-            myButton.SetOnClick([]() {
-                _BANANA_LOGI("Button clicked!");
+            myButton.SetRadius(buttonRadius);
+            myButton.SetOnClick([this]() {
+                buttonRadius -= 2.0f;
+                if (buttonRadius < 0.0f) buttonRadius = 20.0f;
+                myButton.SetRadius(buttonRadius);
+                _BANANA_LOGI("Button clicked! Radius: %f", buttonRadius);
             });
         });
 
@@ -35,16 +39,8 @@ public:
         });
 
         addListener("frame", [this]() {
-            frameCount++;
             renderer.BeginFrame();
             myButton.Draw(ui);
-            
-            // DEBUG: Draw frame counter and shake status
-            ui.DrawText(10, 10, "Frame: " + std::to_string(frameCount), 
-                       1.0f, 1.0f, 1.0f, 1.0f, 20.0f);
-            ui.DrawText(10, 40, "Shake to open menu", 
-                       1.0f, 1.0f, 1.0f, 1.0f, 20.0f);
-            
             DrawDevOverlay();
             renderer.EndFrame();
         });
