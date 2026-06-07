@@ -3,7 +3,7 @@
 #include <BananaSDK/UI.h>
 #include <BananaSDK/Button.h>
 
-class MyApp : public AndroidApp {
+class MyApp : public AndroidAppDev {
 public:
     Renderer renderer;
     UIRenderer ui;
