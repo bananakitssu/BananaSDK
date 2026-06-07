@@ -10,7 +10,7 @@ public:
     UIRenderer() = default;
     ~UIRenderer() { Destroy(); }
 
-    bool Init(ANativeActivity* activity, AndroidApp* app, Renderer* renderer = nullptr, int width, int height);
+    bool Init(ANativeActivity* activity, AndroidApp* app, int width, int height, Renderer* renderer = nullptr);
     void Destroy();
 
     // x, y = top-left corner in screen pixels (y-down)
