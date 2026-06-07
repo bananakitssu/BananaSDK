@@ -5,10 +5,13 @@
 #include <any>
 #include <unordered_map>
 #include <vector>
+#include <variant>
 #include "Log.h"
 #include <android/native_window.h>
 #include <android_native_app_glue.h>
 #include <android/input.h>
+#include "Button.h"
+#include "Box.h"
 
 #define startAndroid(AppClass)                            \
     extern "C" {                                          \
@@ -96,7 +99,8 @@ public:
     float GetTouchY() const { return m_TouchY; }
 
     float m_TouchX = 0, m_TouchY = 0;
-    std::vector<std::any> m_Elements;
+    using UIElement = std::variant<Button, Box>;
+    std::vector<UIElement> m_Elements;
 
     ANativeWindow* getWindow() const { return m_Window; }
     ANativeActivity* GetActivity() const { return m_State->activity; }
