@@ -21,7 +21,7 @@ void AndroidAppDev::_Init(android_app* state) {
     addListener("windowready", [this, state]() {
         int w = ANativeWindow_getWidth(getWindow());
         int h = ANativeWindow_getHeight(getWindow());
-        m_DevUI.Init(GetActivity(), w, h);
+        m_DevUI.Init(GetActivity(), this, nullptr, w, h);
         _SetupDevMenu(state);
     });
 

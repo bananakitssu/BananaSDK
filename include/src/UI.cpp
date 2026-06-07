@@ -117,11 +117,11 @@ bool UIRenderer::Init(ANativeActivity* activity, AndroidApp* app, Renderer* rend
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     m_Ready = true;
     app.addListener("frame", [this]() {
-        renderer.BeginFrame();
+        if (renderer) renderer->BeginFrame();
         for (std::any element : app.getElements()) {
             element.Draw(this);
         }
-        renderer.EndFrame();
+        if (renderer) renderer->EndFrame();
     });
     _BANANA_LOGI("UIRenderer ready (%dx%d)", w, h);
     return true;

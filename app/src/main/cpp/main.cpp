@@ -19,12 +19,13 @@ public:
             int number = 20.0f;
             int w = ANativeWindow_getWidth(getWindow());
             int h = ANativeWindow_getHeight(getWindow());
-            ui.Init(getActivity(), this, renderer, w, h);
+            ui.Init(getActivity(), this, &renderer, w, h);
 
             myButton = Button(20, 60, 250, 70, "Click");
             //myButton.SetColor(1.0f, 0.0f, 0.0f);
             //myButton.SetTextColor(1.0f, 1.0f, 1.0f);
             //myButton.SetRadius(20.0f);
+            addElement(myButton);
             myButton.SetOnClick([&]() {
                 buttonRadius -= 1.0f;
                 myButton.SetRadius(buttonRadius);
