@@ -122,14 +122,14 @@ bool UIRenderer::Init(ANativeActivity* activity, AndroidApp* app, int w, int h, 
             renderer->BeginFrame();
         }
         
-        /*for (std::any element : app->getElements()) {
+        for (std::any element : app->getElements()) {
             if (element.has_value()) {
                 auto visualItem = std::any_cast<Button*>(element);
                 if (visualItem != nullptr) {
                     visualItem->Draw(*this);
                 }
             }
-        }*/
+        }
         
         if (renderer != nullptr) {
             renderer->EndFrame();
