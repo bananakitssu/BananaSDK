@@ -117,7 +117,7 @@ bool UIRenderer::Init(ANativeActivity* activity, AndroidApp* app, int w, int h, 
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     m_Ready = true;
-    app->addListener("frame", [&, this]() {
+    app->addListener("frame", [this, app, renderer]() {
         if (renderer != nullptr) {
             renderer->BeginFrame();
         }
