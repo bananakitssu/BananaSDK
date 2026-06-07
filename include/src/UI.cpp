@@ -2,6 +2,7 @@
 #include "BananaSDK/Log.h"
 #include "BananaSDK/AndroidApp.h"
 #include "BananaSDK/Renderer.h"
+#include "BananaSDK/Button.h"
 #include <jni.h>
 #include <vector>
 #include <string>
@@ -103,7 +104,7 @@ GLuint UIRenderer::CreateProgram(const char* vert, const char* frag) {
 
 // ── Init / Destroy ────────────────────────────────────────────────────────────
 
-bool UIRenderer::Init(ANativeActivity* activity, AndroidApp* app, Renderer* renderer, int w, int h) {
+bool UIRenderer::Init(ANativeActivity* activity, AndroidApp* app, int w, int h, Renderer* renderer) {
     m_Activity = activity;
     m_Width    = w;
     m_Height   = h;
@@ -116,12 +117,21 @@ bool UIRenderer::Init(ANativeActivity* activity, AndroidApp* app, Renderer* rend
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     m_Ready = true;
-    app.addListener("frame", [this]() {
-        if (renderer) renderer->BeginFrame();
-        for (std::any element : app.getElements()) {
-            element.Draw(this);
+    app->addListener("frame", [this]() {
+        if (renderer != nullptr) {
+            renderer->BeginFrame();
         }
-        if (renderer) renderer->EndFrame();
+        
+        for (std::any element : app->getElements()) {
+            if (element.has_value()) {
+                auto visualItem = std::any_cast<Button*>(element);
+                visualItem->Draw(this);
+            }
+        }
+        
+        if (renderer != nullptr) {
+            renderer->EndFrame();
+        }
     });
     _BANANA_LOGI("UIRenderer ready (%dx%d)", w, h);
     return true;
