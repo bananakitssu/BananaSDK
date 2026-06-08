@@ -26,7 +26,7 @@ public:
             //myButton.SetTextColor(1.0f, 1.0f, 1.0f);
             //myButton.SetRadius(20.0f);
             addElement(myButton);
-            myButton.SetOnClick([&]() {
+            myButton->SetOnClick([&]() {
                 buttonRadius -= 1.0f;
                 myButton->SetRadius(buttonRadius);
                 _BANANA_LOGI("Button clicked!");
@@ -34,11 +34,11 @@ public:
         });
 
         addListener("touchstart", [this]() {
-            myButton.OnTouch(GetTouchX(), GetTouchY());
+            myButton->OnTouch(GetTouchX(), GetTouchY());
         });
 
         addListener("touchend", [this]() {
-            myButton.OnRelease();
+            myButton->OnRelease();
         });
 
         /*addListener("frame", [this]() {
