@@ -24,6 +24,7 @@ void AndroidAppDev::_Init(android_app* state) {
         int h = ANativeWindow_getHeight(getWindow());
         m_DevUI.Init(GetActivity(), this, w, h, nullptr);
         _SetupDevMenu(state);
+        m_DevMenu.Show(m_DevUI);
     });
 
     addListener("touchstart", [this]() {
