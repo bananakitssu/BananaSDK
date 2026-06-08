@@ -10,5 +10,5 @@ It's basically just a yellow screen and a clickable button for now for testing
 The SDK for Android is being tested using a Debug APK.
 
 Progress:
-    - BananaSDK for Android: Pending
-    - BananaSDK for Websites: Pending
+  - BananaSDK for Android: Pending
+  - BananaSDK for Websites: Pending
