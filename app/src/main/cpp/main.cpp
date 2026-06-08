@@ -7,7 +7,7 @@ class MyApp : public AndroidAppDev {
 public:
     Renderer renderer;
     UIRenderer ui;
-    Button myButton;
+    std::shared_ptr<Button> myButton;
     float buttonRadius = 20.0f;
 
     void Main() override {
