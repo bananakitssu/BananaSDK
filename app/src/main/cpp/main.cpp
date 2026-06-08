@@ -21,14 +21,14 @@ public:
             int h = ANativeWindow_getHeight(getWindow());
             ui.Init(getActivity(), this, w, h, &renderer);
 
-            myButton = Button(20, 60, 250, 70, "Click");
+            myButton = std::make_shared<Button>(20, 60, 250, 70, "Click");
             //myButton.SetColor(1.0f, 0.0f, 0.0f);
             //myButton.SetTextColor(1.0f, 1.0f, 1.0f);
             //myButton.SetRadius(20.0f);
             addElement(myButton);
             myButton.SetOnClick([&]() {
                 buttonRadius -= 1.0f;
-                myButton.SetRadius(buttonRadius);
+                myButton->SetRadius(buttonRadius);
                 _BANANA_LOGI("Button clicked!");
             });
         });
