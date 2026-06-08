@@ -2,8 +2,8 @@
 #include <GLES2/gl2.h>
 #include <android/native_activity.h>
 #include <string>
-#include "BananaSDK/AndroidApp.h"
-#include "BananaSDK/Renderer.h"
+#include "AndroidApp.h"
+#include "Renderer.h"
 
 class UIRenderer {
 public:

@@ -3,6 +3,7 @@
 #include "BananaSDK/AndroidApp.h"
 #include "BananaSDK/Renderer.h"
 #include "BananaSDK/Button.h"
+#include "BananaSDK/Box.h"
 #include <jni.h>
 #include <vector>
 #include <string>
