@@ -2,8 +2,9 @@
 #include <GLES2/gl2.h>
 #include <android/native_activity.h>
 #include <string>
-#include "AndroidApp.h"
-#include "Renderer.h"
+
+class AndroidApp;
+class Renderer;
 
 class UIRenderer {
 public:

@@ -1,8 +1,9 @@
 #pragma once
-#include "UI.h"
 #include <string>
 #include <functional>
 #include <chrono>
+
+class UIRenderer;
 
 class Button {
 public:

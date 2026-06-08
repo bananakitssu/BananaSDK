@@ -1,5 +1,5 @@
 #pragma once
-#include "UI.h"
+class UIRenderer;
 
 class Box {
 public:

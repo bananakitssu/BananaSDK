@@ -10,8 +10,9 @@
 #include <android/native_window.h>
 #include <android_native_app_glue.h>
 #include <android/input.h>
-#include "Button.h"
-#include "Box.h"
+
+class Button;
+class Box;
 
 #define startAndroid(AppClass)                            \
     extern "C" {                                          \

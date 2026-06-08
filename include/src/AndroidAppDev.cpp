@@ -1,4 +1,5 @@
 #include "BananaSDK/AndroidAppDev.h"
+#include "BananaSDK/AndroidApp.h"
 #include "BananaSDK/Log.h"
 #include <cmath>
 
