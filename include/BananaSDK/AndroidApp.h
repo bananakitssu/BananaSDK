@@ -86,12 +86,14 @@ public:
     void removeListener(const std::string& event) {
         m_Listeners.remove(event, -1);
     }
+    
+    using UIElement = std::variant<Button, Box>;
 
-    void addElement(const std::any& element) {
+    void addElement(const UIElement& element) {
         m_Elements.push_back(element);
     }
 
-    const std::vector<std::any>& getElements() const { 
+    const std::vector<UIElement>& getElements() const { 
         return m_Elements; 
     }
 
@@ -99,7 +101,6 @@ public:
     float GetTouchY() const { return m_TouchY; }
 
     float m_TouchX = 0, m_TouchY = 0;
-    using UIElement = std::variant<Button, Box>;
     std::vector<UIElement> m_Elements;
 
     ANativeWindow* getWindow() const { return m_Window; }
