@@ -3,7 +3,10 @@
 #include <cstdio>
 #include <cstdlib>
 #include <android_native_app_glue.h>
-#include "BananaSDK/Android.h"
+#include "BananaSDK/Button.h"
+#include "BananaSDK/Box.h"
+#include "BananaSDK/AndroidApp.h"
+#include "BananaSDK/UI.h"
 
 // Global log file for crash detection
 FILE* g_crashLog = nullptr;
