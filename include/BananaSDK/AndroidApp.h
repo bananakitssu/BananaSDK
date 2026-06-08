@@ -10,9 +10,7 @@
 #include <android/native_window.h>
 #include <android_native_app_glue.h>
 #include <android/input.h>
-
-class Button;
-class Box;
+#include "BananaSDK/UIElements.h"
 
 #define startAndroid(AppClass)                            \
     extern "C" {                                          \
@@ -87,8 +85,6 @@ public:
     void removeListener(const std::string& event) {
         m_Listeners.remove(event, -1);
     }
-    
-    using UIElement = std::variant<Button, Box>;
 
     void addElement(const UIElement& element) {
         m_Elements.push_back(element);
