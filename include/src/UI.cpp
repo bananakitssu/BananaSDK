@@ -1,6 +1,7 @@
 #include "BananaSDK/UI.h"
 #include "BananaSDK/Log.h"
 #include "BananaSDK/AndroidApp.h"
+#include "BananaSDK/AndroidAppDev.h"
 #include "BananaSDK/Renderer.h"
 #include "BananaSDK/Button.h"
 #include "BananaSDK/Box.h"
