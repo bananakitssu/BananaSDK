@@ -106,7 +106,7 @@ GLuint UIRenderer::CreateProgram(const char* vert, const char* frag) {
 
 // ── Init / Destroy ────────────────────────────────────────────────────────────
 
-bool UIRenderer::Init(ANativeActivity* activity, AndroidApp* app, int w, int h, Renderer* renderer) {
+bool UIRenderer::Init(ANativeActivity* activity, AndroidAppDev* app, int w, int h, Renderer* renderer) {
     m_Activity = activity;
     m_Width    = w;
     m_Height   = h;
@@ -119,27 +119,33 @@ bool UIRenderer::Init(ANativeActivity* activity, AndroidApp* app, int w, int h, 
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     m_Ready = true;
-    app->addListener("frame", [this, app, renderer]() {
-        if (renderer != nullptr) {
-            renderer->BeginFrame();
-        }
+    if (renderer != nullptr) {
+        app->addListener("frame", [this, app, renderer]() {
+            if (renderer != nullptr) {
+                renderer->BeginFrame();
+            }
         
-        for (auto& element : app->getElements()) {
-            std::visit([this](auto& visualItem) {
-                visualItem->Draw(*this);
-                //using ItemType = std::decay_t<decltype(visualItem)>;
-                //const_cast<ItemType&>(visualItem)->Draw(*this);
-            }, element);
-        }
+            for (auto& element : app->getElements()) {
+                std::visit([this](auto& visualItem) {
+                    visualItem->Draw(*this);
+                    //using ItemType = std::decay_t<decltype(visualItem)>;
+                    //const_cast<ItemType&>(visualItem)->Draw(*this);
+                }, element);
+            }
+            
+            app->_Emit("beforeendframe");
         
-        if (auto* devApp = dynamic_cast<AndroidAppDev*>(app)) {
-            devApp->DrawDevOverlay();
-        }
-        
-        if (renderer != nullptr) {
-            renderer->EndFrame();
-        }
-    });
+            if (renderer != nullptr) {
+                renderer->EndFrame();
+            }
+        });
+    } else {
+        app->addListener("beforeendframe", [this, app, renderer]() {
+            if (auto* devApp = dynamic_cast<AndroidAppDev*>(app)) {
+                devApp->DrawDevOverlay();
+            }
+        })
+    }
     _BANANA_LOGI("UIRenderer ready (%dx%d)", w, h);
     return true;
 }
