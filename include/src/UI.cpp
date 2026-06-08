@@ -125,8 +125,9 @@ bool UIRenderer::Init(ANativeActivity* activity, AndroidApp* app, int w, int h, 
         
         for (auto& element : app->getElements()) {
             std::visit([this](auto& visualItem) {
-                using ItemType = std::decay_t<decltype(visualItem)>;
-                const_cast<ItemType&>(visualItem).Draw(*this);
+                visualItem->Draw(*this);
+                //using ItemType = std::decay_t<decltype(visualItem)>;
+                //const_cast<ItemType&>(visualItem)->Draw(*this);
             }, element);
         }
         

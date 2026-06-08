@@ -86,11 +86,11 @@ public:
         m_Listeners.remove(event, -1);
     }
 
-    void addElement(const BananaSDK::UIElement& element) {
+    void addElement(const UIEl::UIElement& element) {
         m_Elements.push_back(element);
     }
 
-    const std::vector<BananaSDK::UIElement>& getElements() const { 
+    const std::vector<UIEl::UIElement>& getElements() const { 
         return m_Elements; 
     }
 
@@ -98,7 +98,7 @@ public:
     float GetTouchY() const { return m_TouchY; }
 
     float m_TouchX = 0, m_TouchY = 0;
-    std::vector<BananaSDK::UIElement> m_Elements;
+    std::vector<UIEl::UIElement> m_Elements;
 
     ANativeWindow* getWindow() const { return m_Window; }
     ANativeActivity* GetActivity() const { return m_State->activity; }
