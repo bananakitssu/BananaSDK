@@ -131,6 +131,10 @@ bool UIRenderer::Init(ANativeActivity* activity, AndroidApp* app, int w, int h, 
             }, element);
         }
         
+        if (auto* devApp = dynamic_cast<AndroidAppDev*>(app)) {
+            devApp->DrawDevOverlay();
+        }
+        
         if (renderer != nullptr) {
             renderer->EndFrame();
         }
