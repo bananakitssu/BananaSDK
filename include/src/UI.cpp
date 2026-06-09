@@ -121,7 +121,7 @@ bool UIRenderer::Init(ANativeActivity* activity, std::variant<AndroidApp*, Andro
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     m_Ready = true;
     if (renderer != nullptr) {
-        std::visit([this](auto* app_) {
+        std::visit([this, renderer](auto* app_) {
             app_->addListener("frame", [this, app_, renderer]() {
                 if (renderer != nullptr) {
                     renderer->BeginFrame();
