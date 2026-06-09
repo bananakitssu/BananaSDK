@@ -2,6 +2,7 @@
 #include <GLES2/gl2.h>
 #include <android/native_activity.h>
 #include <string>
+#include <variant>
 
 class AndroidApp;
 class Renderer;
@@ -11,7 +12,7 @@ public:
     UIRenderer() = default;
     ~UIRenderer() { Destroy(); }
 
-    bool Init(ANativeActivity* activity, AndroidApp* app, int width, int height, Renderer* renderer = nullptr);
+    bool Init(ANativeActivity* activity, std::variant<AndroidApp*, AndroidAppDev*> app, int width, int height, Renderer* renderer = nullptr);
     void Destroy();
 
     // x, y = top-left corner in screen pixels (y-down)
