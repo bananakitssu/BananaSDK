@@ -9,6 +9,7 @@
 #include <vector>
 #include <string>
 #include <any>
+#include <variant>
 
 // ── Shaders ──────────────────────────────────────────────────────────────────
 
@@ -106,7 +107,7 @@ GLuint UIRenderer::CreateProgram(const char* vert, const char* frag) {
 
 // ── Init / Destroy ────────────────────────────────────────────────────────────
 
-bool UIRenderer::Init(ANativeActivity* activity, AndroidAppDev* app, int w, int h, Renderer* renderer) {
+bool UIRenderer::Init(ANativeActivity* activity, std::variant<AndroidApp*, AndroidAppDev*> app, int w, int h, Renderer* renderer) {
     m_Activity = activity;
     m_Width    = w;
     m_Height   = h;
@@ -141,10 +142,10 @@ bool UIRenderer::Init(ANativeActivity* activity, AndroidAppDev* app, int w, int 
         });
     } else {
         app->addListener("beforeendframe", [this, app, renderer]() {
-            if (auto* devApp = dynamic_cast<AndroidAppDev*>(app)) {
-                devApp->DrawDevOverlay();
+            if constexpr (std::is_same_v<decltype(app), AndroidAppDev*>) {
+                app->DrawDevOverlay();
             }
-        })
+        });
     }
     _BANANA_LOGI("UIRenderer ready (%dx%d)", w, h);
     return true;
