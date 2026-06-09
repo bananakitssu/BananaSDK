@@ -296,6 +296,33 @@ UIRenderer::TextTexture UIRenderer::MakeTextTexture(
     return result;
 }
 
+float UIRenderer::MeasureText(const std::string& text, float fontSize) {
+    if (!m_Activity || text.empty()) return 0.0f;
+
+    JNIEnv* env = nullptr;
+    bool attached = false;
+    jint res = m_Activity->vm->GetEnv((void**)&env, JNI_VERSION_1_6);
+    if (res == JNI_EDETACHED) {
+        m_Activity->vm->AttachCurrentThread(&env, nullptr);
+        attached = true;
+    } else if (res != JNI_OK) return 0.0f;
+
+    jclass clsPaint = env->FindClass("android/graphics/Paint");
+    jobject paint   = env->NewObject(clsPaint, env->GetMethodID(clsPaint, "<init>", "()V"));
+    env->CallVoidMethod(paint, env->GetMethodID(clsPaint, "setTextSize", "(F)V"), (jfloat)fontSize);
+
+    jstring jtext = env->NewStringUTF(text.c_str());
+    float width = env->CallFloatMethod(paint,
+        env->GetMethodID(clsPaint, "measureText", "(Ljava/lang/String;)F"), jtext);
+
+    env->DeleteLocalRef(jtext);
+    env->DeleteLocalRef(paint);
+    env->DeleteLocalRef(clsPaint);
+    if (attached) m_Activity->vm->DetachCurrentThread();
+
+    return width;
+}
+
 void UIRenderer::DrawText(float x, float y, const std::string& text,
                            float r, float g, float b, float a,
                            float fontSize) {

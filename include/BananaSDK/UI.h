@@ -25,6 +25,8 @@ public:
                   float r, float g, float b, float a = 1.0f,
                   float fontSize = 32.0f);
 
+    float MeasureText(const std::string& text, float fontSize);
+
     int  GetWidth()  const { return m_Width; }
     int  GetHeight() const { return m_Height; }
     bool IsReady()   const { return m_Ready; }
