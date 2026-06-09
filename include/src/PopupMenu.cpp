@@ -42,6 +42,7 @@ void PopupMenu::Hide() { m_Visible = false; }
 
 void PopupMenu::Draw(UIRenderer& ui) {
     if (!m_Visible) return;
+    ui.DrawText(0, 0, "Drawing...", 0.4f, 0.4f, 0.4f, 1.0f, 24.0f);
 
     // Scrim
     ui.DrawRect(0, 0, m_SW, m_SH, 0.0f, 0.0f, 0.0f, 0.45f);
