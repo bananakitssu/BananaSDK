@@ -92,17 +92,17 @@ void AndroidAppDev::_DetectShake(float x, float y, float z) {
     float windowTime    = std::chrono::duration<float>(now - m_ShakeWindowStart).count();
     float timeSinceLast = std::chrono::duration<float>(now - m_LastShakeTime).count();
 
-    if (windowTime > 2.0f) {
+    if (windowTime > 1.0f) {
         m_ShakeCount       = 0;
         m_ShakeWindowStart = now;
     }
 
-    if (force > 5.0f && timeSinceLast > 0.1f) {
+    if (force > 8.0f && timeSinceLast > 0.1f) {
         m_ShakeCount++;
         m_LastShakeTime = now;
     }
 
-    if (m_ShakeCount >= 2 && !m_DevMenu.IsVisible() && m_MenuSetup) {
+    if (m_ShakeCount >= 3 && !m_DevMenu.IsVisible() && m_MenuSetup) {
         m_ShakeCount = 0;
         m_DevMenu.Show(m_DevUI);
         _BANANA_LOGI("[DevMode] Dev menu opened by shake");
