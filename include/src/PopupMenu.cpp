@@ -47,7 +47,7 @@ void PopupMenu::Draw(UIRenderer& ui) {
     ui.DrawRect(0, 0, m_SW, m_SH, 0.0f, 0.0f, 0.0f, 0.45f);
 
     // Card
-    ui.DrawRect(m_CardX, m_CardY, m_CardW, m_CardH, 1.0f, 1.0f, 1.0f, 1.0f, 12.0f);
+    ui.DrawRect(m_CardX, m_CardY, m_CardW, m_CardH, 1.0f, 1.0f, 1.0f, 1.0f, 24.0f);
 
     float pad  = 20.0f;
     float rowH = 60.0f;
