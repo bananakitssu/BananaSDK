@@ -121,8 +121,8 @@ bool UIRenderer::Init(ANativeActivity* activity, std::variant<AndroidApp*, Andro
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     m_Ready = true;
     if (renderer != nullptr) {
-        std::visit([this, renderer](auto* app_) {
-            app_->addListener("frame", [this, app_, renderer]() {
+        std::visit([this, renderer, app](auto* app_) {
+            app_->addListener("frame", [this, app_, renderer, app]() {
                 if (renderer != nullptr) {
                     renderer->BeginFrame();
                 }
@@ -135,8 +135,8 @@ bool UIRenderer::Init(ANativeActivity* activity, std::variant<AndroidApp*, Andro
                     }, element);
                 }
                 
-                if constexpr (std::is_same_v<decltype(app_), AndroidAppDev*>) {
-                    app_->DrawDevOverlay();
+                if (app.index() == 1) {
+                    std::get<AndroidAppDev*>(app)->DrawDevOverlay();
                 }
         
                 if (renderer != nullptr) {
