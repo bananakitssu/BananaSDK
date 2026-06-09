@@ -24,7 +24,6 @@ void AndroidAppDev::_Init(android_app* state) {
         int h = ANativeWindow_getHeight(getWindow());
         m_DevUI.Init(GetActivity(), this, w, h, nullptr);
         _SetupDevMenu(state);
-        m_DevMenu.Show(m_DevUI);
     });
 
     addListener("touchstart", [this]() {
@@ -47,7 +46,7 @@ void AndroidAppDev::_SetupDevMenu(android_app* state) {
 }
 
 void AndroidAppDev::_SetupSensors(android_app* state) {
-    m_SensorManager = ASensorManager_getInstance();
+    m_SensorManager = ASensorManager_getInstanceForPackage("com.bananasdk.app");
     m_Accelerometer = ASensorManager_getDefaultSensor(
         m_SensorManager, ASENSOR_TYPE_ACCELEROMETER);
     m_SensorQueue = ASensorManager_createEventQueue(
@@ -61,7 +60,7 @@ void AndroidAppDev::_SetupSensors(android_app* state) {
 
 void AndroidAppDev::DrawDevOverlay() {
     _PollSensors();
-    if (m_DevMenu.IsVisible())
+    //if (m_DevMenu.IsVisible())
         m_DevMenu.Draw(m_DevUI);
 }
 
