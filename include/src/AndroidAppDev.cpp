@@ -14,8 +14,6 @@ AndroidAppDev::~AndroidAppDev() {
 }
 
 void AndroidAppDev::_Init(android_app* state) {
-    AndroidApp::_Init(state); // calls Main() — user listeners added first
-
     _SetupSensors(state);
 
     // windowready fires AFTER user's, so EGL is already active
@@ -34,6 +32,8 @@ void AndroidAppDev::_Init(android_app* state) {
     addListener("touchend", [this]() {
         m_DevMenu.OnRelease();
     });
+    
+    AndroidApp::_Init(state);
 }
 
 void AndroidAppDev::_SetupDevMenu(android_app* state) {
