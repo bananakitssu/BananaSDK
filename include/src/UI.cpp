@@ -121,29 +121,29 @@ bool UIRenderer::Init(ANativeActivity* activity, std::variant<AndroidApp*, Andro
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     m_Ready = true;
     if (renderer != nullptr) {
-        app->addListener("frame", [this, app, renderer]() {
-            if (renderer != nullptr) {
-                renderer->BeginFrame();
-            }
-        
-            for (auto& element : app->getElements()) {
-                std::visit([this](auto& visualItem) {
-                    visualItem->Draw(*this);
-                    //using ItemType = std::decay_t<decltype(visualItem)>;
-                    //const_cast<ItemType&>(visualItem)->Draw(*this);
-                }, element);
-            }
-            
-            std::visit([this](auto* app_) {
-                if constexpr (std::is_same_v<decltype(app), AndroidAppDev*>) {
+        std::visit([this](auto* app_) {
+            app_->addListener("frame", [this, app_, renderer]() {
+                if (renderer != nullptr) {
+                    renderer->BeginFrame();
+                }
+                
+                for (auto& element : app_->getElements()) {
+                    std::visit([this](auto& visualItem) {
+                        visualItem->Draw(*this);
+                        //using ItemType = std::decay_t<decltype(visualItem)>;
+                        //const_cast<ItemType&>(visualItem)->Draw(*this);
+                    }, element);
+                }
+                
+                if constexpr (std::is_same_v<decltype(app_), AndroidAppDev*>) {
                     app_->DrawDevOverlay();
                 }
-            }, app);
         
-            if (renderer != nullptr) {
-                renderer->EndFrame();
-            }
-        });
+                if (renderer != nullptr) {
+                    renderer->EndFrame();
+                }
+            });
+        }, app);
     } else {
         /*app->addListener("beforeendframe", [this, app, renderer]() {
             if constexpr (std::is_same_v<decltype(app), AndroidAppDev*>) {
