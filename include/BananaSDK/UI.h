@@ -5,6 +5,7 @@
 #include <variant>
 
 class AndroidApp;
+class AndroidAppDev;
 class Renderer;
 
 class UIRenderer {
