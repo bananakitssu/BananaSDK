@@ -37,9 +37,12 @@ public:
             myButton->OnTouch(GetTouchX(), GetTouchY());
         });
 
-        addListener("touchend", [this]() {
-            myButton->OnRelease();
-        });
+        addListener("touchmove", [this]() {
+    myButton->OnTouchMove(GetTouchX(), GetTouchY());
+});
+addListener("touchend", [this]() {
+    myButton->OnRelease(GetTouchX(), GetTouchY());
+});
 
         /*addListener("frame", [this]() {
             renderer.BeginFrame();

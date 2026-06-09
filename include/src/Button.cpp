@@ -24,8 +24,17 @@ bool Button::OnTouch(float x, float y) {
     return false;
 }
 
-void Button::OnRelease() {
-    if (m_IsDown && m_OnClick) m_OnClick();
+void Button::OnTouchMove(float x, float y) {
+    if (m_IsDown) {
+        if (x < m_X || x > m_X + m_W || y < m_Y || y > m_Y + m_H)
+            m_IsDown = false;  // finger left — cancel, animate back up
+    }
+}
+
+void Button::OnRelease(float x, float y) {
+    if (m_IsDown && x >= m_X && x <= m_X + m_W && y >= m_Y && y <= m_Y + m_H) {
+        if (m_OnClick) m_OnClick();
+    }
     m_IsDown = false;
 }
 

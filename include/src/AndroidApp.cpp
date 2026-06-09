@@ -122,6 +122,7 @@ int32_t AndroidApp::_HandleInput(android_app* state, AInputEvent* event) {
         self->m_TouchY = AMotionEvent_getY(event, 0);
         if (action == AMOTION_EVENT_ACTION_DOWN) self->_Emit("touchstart");
         else if (action == AMOTION_EVENT_ACTION_UP) self->_Emit("touchend");
+        else if (action == AMOTION_EVENT_ACTION_MOVE)  self->_Emit("touchmove");
         return 1;
     }
     return 0;
