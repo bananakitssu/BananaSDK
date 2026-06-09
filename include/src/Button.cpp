@@ -18,13 +18,13 @@ void Button::SetOnClick(std::function<void()> cb)             { m_OnClick = cb; 
 bool Button::OnTouch(float x, float y) {
     if (x >= m_X && x <= m_X + m_W && y >= m_Y && y <= m_Y + m_H) {
         m_IsDown = true;
-        if (m_OnClick) m_OnClick();
         return true;
     }
     return false;
 }
 
 void Button::OnRelease() {
+    if (m_IsDown && m_OnClick) m_OnClick();
     m_IsDown = false;
 }
 
