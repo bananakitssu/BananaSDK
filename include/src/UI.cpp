@@ -134,18 +134,22 @@ bool UIRenderer::Init(ANativeActivity* activity, std::variant<AndroidApp*, Andro
                 }, element);
             }
             
-            app->_Emit("beforeendframe");
+            std::visit([this](auto* app_) {
+                if constexpr (std::is_same_v<decltype(app), AndroidAppDev*>) {
+                    app_->DrawDevOverlay();
+                }
+            }, app);
         
             if (renderer != nullptr) {
                 renderer->EndFrame();
             }
         });
     } else {
-        app->addListener("beforeendframe", [this, app, renderer]() {
+        /*app->addListener("beforeendframe", [this, app, renderer]() {
             if constexpr (std::is_same_v<decltype(app), AndroidAppDev*>) {
                 app->DrawDevOverlay();
             }
-        });
+        });*/
     }
     _BANANA_LOGI("UIRenderer ready (%dx%d)", w, h);
     return true;
