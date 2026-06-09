@@ -19,7 +19,7 @@ void PopupMenu::Show(UIRenderer& ui) {
     m_SW = (float)ui.GetWidth();
     m_SH = (float)ui.GetHeight();
 
-    float rowH   = 60.0f;
+    float rowH   = 80.0f;
     float pad    = 20.0f;
     m_CardW = m_SW - 80.0f;
     m_CardH = pad + rowH * (float)m_Items.size() + pad;

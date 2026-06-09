@@ -23,7 +23,8 @@ public:
 
     void SetOnClick(std::function<void()> cb);
     bool OnTouch(float x, float y);
-    void OnRelease();
+    void OnTouchMove(float x, float y);
+    void OnRelease(float x, float y);
 
     void Draw(UIRenderer& ui);
 
