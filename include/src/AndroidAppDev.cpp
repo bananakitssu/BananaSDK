@@ -15,14 +15,15 @@ AndroidAppDev::~AndroidAppDev() {
 
 void AndroidAppDev::_Init(android_app* state) {
     _SetupSensors(state);
+    _SetupDevMenu(state);
 
     // windowready fires AFTER user's, so EGL is already active
-    addListener("windowready", [this, state]() {
+    /*addListener("windowready", [this, state]() {
         int w = ANativeWindow_getWidth(getWindow());
         int h = ANativeWindow_getHeight(getWindow());
         m_DevUI.Init(GetActivity(), this, w, h, nullptr);
         _SetupDevMenu(state);
-    });
+    });*/
 
     addListener("touchstart", [this]() {
         if (m_DevMenu.IsVisible())
@@ -59,8 +60,13 @@ void AndroidAppDev::_SetupSensors(android_app* state) {
 }
 
 void AndroidAppDev::DrawDevOverlay() {
+    if (!m_DevUI.IsReady()) {
+        int w = ANativeWindow_getWidth(getWindow());
+        int h = ANativeWindow_getHeight(getWindow());
+        m_DevUI.Init(GetActivity(), this, w, h, nullptr);
+    }
     _PollSensors();
-    //if (m_DevMenu.IsVisible())
+    if (m_DevMenu.IsVisible())
         m_DevMenu.Draw(m_DevUI);
 }
 
