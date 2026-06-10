@@ -36,7 +36,7 @@ public:
             myInput->SetOnSubmit([](const std::string& text) {
                 // do absolutely nothing
             });
-            addElememt(myInput);
+            addElement(myInput);
             addElement(myButton);
             myButton->SetOnClick([&]() {
                 buttonRadius -= 1.0f;
