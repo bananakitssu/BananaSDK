@@ -16,6 +16,7 @@ add_library(bananasdk SHARED
     include/src/ContextMenu.cpp
     include/src/Text.cpp
     include/src/InputField.cpp
+    include/src/Textarea.cpp
     app/src/main/cpp/main.cpp
 )
 
