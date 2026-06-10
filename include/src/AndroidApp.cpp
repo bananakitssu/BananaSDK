@@ -152,3 +152,44 @@ int32_t AndroidApp::_HandleInput(android_app* state, AInputEvent* event) {
 
     return 0;
 }
+
+bool AndroidApp::DispatchTouch(float x, float y) {
+    for (auto& el : m_Elements) {
+        std::visit([&](auto& ptr) {
+            using T = std::decay_t<decltype(*ptr)>;
+            if constexpr (std::is_same_v<T, InputField>)
+                if (!ptr->HitTest(x, y) && ptr->IsFocused())
+                    ptr->OnFocusLost();
+        }, el);
+    }
+    for (int i = (int)m_Elements.size() - 1; i >= 0; i--) {
+        bool hit = std::visit([x, y](auto& ptr) -> bool {
+            return ptr->HitTest(x, y);
+        }, m_Elements[i]);
+        if (hit) {
+            std::visit([x, y](auto& ptr) { ptr->OnTouch(x, y); }, m_Elements[i]);
+            return true;
+        }
+    }
+    return false;
+}
+
+void AndroidApp::DispatchTouchMove(float x, float y) {
+    for (auto& el : m_Elements)
+        std::visit([x, y](auto& ptr) { ptr->OnTouchMove(x, y); }, el);
+}
+
+void AndroidApp::DispatchRelease(float x, float y) {
+    for (auto& el : m_Elements)
+        std::visit([x, y](auto& ptr) { ptr->OnRelease(x, y); }, el);
+}
+
+void AndroidApp::DispatchKey(int32_t keyCode, int32_t unicode) {
+    for (auto& el : m_Elements) {
+        std::visit([keyCode, unicode](auto& ptr) {
+            using T = std::decay_t<decltype(*ptr)>;
+            if constexpr (std::is_same_v<T, InputField>)
+                ptr->OnKey(keyCode, unicode);
+        }, el);
+    }
+}
