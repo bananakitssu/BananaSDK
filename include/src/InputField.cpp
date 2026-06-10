@@ -131,10 +131,17 @@ void InputField::Draw(UIRenderer& ui) {
     m_LastTime = now;
     if (m_Focused) { m_CursorBlink += dt; if (m_CursorBlink > 1.0f) m_CursorBlink -= 1.0f; }
 
-    if (m_Focused)
+    /*if (m_Focused)
         ui.DrawRect(m_X-2, m_Y-2, m_W+4, m_H+4, 0.0f, 0.478f, 1.0f, 1.0f, m_Radius+2);
 
-    ui.DrawRect(m_X, m_Y, m_W, m_H, m_BgR, m_BgG, m_BgB, 1.0f, m_Radius);
+    ui.DrawRect(m_X, m_Y, m_W, m_H, m_BgR, m_BgG, m_BgB, 1.0f, m_Radius);*/
+    
+    float r = std::min(m_Radius, std::min(m_W, m_H) / 2.0f);
+
+    if (m_Focused)
+        ui.DrawRect(m_X-2, m_Y-2, m_W+4, m_H+4, 0.0f, 0.478f, 1.0f, 1.0f, r+2);
+
+    ui.DrawRect(m_X, m_Y, m_W, m_H, m_BgR, m_BgG, m_BgB, 1.0f, r);
 
     float ty = m_Y + (m_H - m_FontSize) * 0.5f;
     if (m_Text.empty() && !m_Placeholder.empty())
