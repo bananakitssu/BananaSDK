@@ -78,7 +78,7 @@ bool PopupMenu::OnTouch(float x, float y) {
     return false;
 }
 
-void PopupMenu::OnRelease() {
+void PopupMenu::OnRelease(float x, float y) {
     if (!m_Visible) return;
     for (auto& item : m_Items)
         if (!item.isLabel) item.btn.OnRelease(x, y);
