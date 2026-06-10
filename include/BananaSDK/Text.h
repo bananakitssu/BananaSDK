@@ -10,6 +10,10 @@ public:
     Text(float x, float y, const std::string& text,
          float maxWidth = 0.0f, float fontSize = 32.0f);
 
+    bool HitTest(float x, float y) const;
+    void OnTouch(float x, float y);
+    void OnTouchMove(float x, float y);
+    void OnRelease(float x, float y);
     void SetPosition(float x, float y);
     void SetText(const std::string& text);
     void SetFontSize(float size);

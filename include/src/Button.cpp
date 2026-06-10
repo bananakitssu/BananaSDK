@@ -6,6 +6,10 @@
 Button::Button(float x, float y, float w, float h, const std::string& text, float fontSize)
     : m_X(x), m_Y(y), m_W(w), m_H(h), m_Text(text), m_FontSize(fontSize) {}
 
+bool Button::HitTest(float x, float y) const {
+    return x >= m_X && x <= m_X + m_W && y >= m_Y && y <= m_Y + m_H;
+}
+
 void Button::SetColor(float r, float g, float b, float a)     { m_R=r; m_G=g; m_B=b; m_A=a; }
 void Button::SetTextColor(float r, float g, float b, float a) { m_TR=r; m_TG=g; m_TB=b; m_TA=a; }
 void Button::SetRadius(float radius)                          { m_Radius = radius; }
