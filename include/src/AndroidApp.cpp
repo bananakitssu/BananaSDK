@@ -8,15 +8,7 @@
 #include "BananaSDK/AndroidApp.h"
 #include "BananaSDK/UI.h"
 
-// Global log file for crash detection
-FILE* g_crashLog = nullptr;
-
 void signalHandler(int sig) {
-    if (g_crashLog) {
-        fprintf(g_crashLog, "SIGNAL %d received - CRASH!\n", sig);
-        fflush(g_crashLog);
-        fclose(g_crashLog);
-    }
     std::exit(1);
 }
 
