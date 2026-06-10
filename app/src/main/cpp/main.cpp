@@ -31,6 +31,12 @@ public:
                 myButton->GetW(),
                 50.0f
             );
+            myInput->SetActivity(getActivity());
+            myInput->SetPlaceholder("Type something...");
+            myInput->SetOnSubmit([](const std::string& text) {
+                // do absolutely nothing
+            });
+            addElememt(myInput);
             addElement(myButton);
             myButton->SetOnClick([&]() {
                 buttonRadius -= 1.0f;
