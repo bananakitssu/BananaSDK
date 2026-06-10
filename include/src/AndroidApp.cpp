@@ -132,16 +132,22 @@ int32_t AndroidApp::_HandleInput(android_app* state, AInputEvent* event) {
         int32_t metaState = AKeyEvent_getMetaState(event);
 
         JNIEnv* env = nullptr;
-        self->GetActivity()->vm->GetEnv((void**)&env, JNI_VERSION_1_6);
+        bool attached = false;
+        jint res = self->GetActivity()->vm->GetEnv((void**)&env, JNI_VERSION_1_6);
+        if (res == JNI_EDETACHED) {
+            self->GetActivity()->vm->AttachCurrentThread(&env, nullptr);
+            attached = true;
+        }
+
         jclass  kc  = env->FindClass("android/view/KeyEvent");
-        jobject ke  = env->NewObject(kc,
-                        env->GetMethodID(kc, "<init>", "(II)V"),
-                        (jint)AKEY_EVENT_ACTION_DOWN, (jint)keyCode);
+        jobject ke  = env->NewObject(kc, env->GetMethodID(kc, "<init>", "(II)V"),
+                                     (jint)AKEY_EVENT_ACTION_DOWN, (jint)keyCode);
         int32_t uni = (int32_t)env->CallIntMethod(ke,
-                        env->GetMethodID(kc, "getUnicodeChar", "(I)I"),
-                        (jint)metaState);
+                        env->GetMethodID(kc, "getUnicodeChar", "(I)I"), (jint)metaState);
         env->DeleteLocalRef(ke);
         env->DeleteLocalRef(kc);
+
+        if (attached) self->GetActivity()->vm->DetachCurrentThread();
 
         self->m_LastKeyCode = keyCode;
         self->m_LastUnicode = uni;
