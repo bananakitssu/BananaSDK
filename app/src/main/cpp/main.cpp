@@ -25,6 +25,12 @@ public:
             //myButton.SetColor(1.0f, 0.0f, 0.0f);
             //myButton.SetTextColor(1.0f, 1.0f, 1.0f);
             //myButton.SetRadius(20.0f);
+            auto myInput = std::make_shared<InputField>(
+                myButton->GetX(),
+                myButton->GetY() + 70.0f,
+                myButton->GetW(),
+                50.0f
+            );
             addElement(myButton);
             myButton->SetOnClick([&]() {
                 buttonRadius -= 1.0f;
@@ -33,16 +39,10 @@ public:
             });
         });
 
-        addListener("touchstart", [this]() {
-            myButton->OnTouch(GetTouchX(), GetTouchY());
-        });
-
-        addListener("touchmove", [this]() {
-    myButton->OnTouchMove(GetTouchX(), GetTouchY());
-});
-addListener("touchend", [this]() {
-    myButton->OnRelease(GetTouchX(), GetTouchY());
-});
+        addListener("touchstart", [this]() { DispatchTouch(GetTouchX(), GetTouchY()); });
+addListener("touchmove",  [this]() { DispatchTouchMove(GetTouchX(), GetTouchY()); });
+addListener("touchend",   [this]() { DispatchRelease(GetTouchX(), GetTouchY()); });
+addListener("keydown",    [this]() { DispatchKey(GetLastKeyCode(), GetLastUnicode()); });
 
         /*addListener("frame", [this]() {
             renderer.BeginFrame();

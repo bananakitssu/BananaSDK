@@ -22,9 +22,15 @@ public:
     void SetSize(float w, float h);
 
     void SetOnClick(std::function<void()> cb);
+    bool HitTest(float x, float y) const;
     bool OnTouch(float x, float y);
     void OnTouchMove(float x, float y);
     void OnRelease(float x, float y);
+
+    float GetY() { return m_Y };
+    float GetX() { return m_X };
+    float GetW() { return m_W };
+    float GetH() { return m_H };
 
     void Draw(UIRenderer& ui);
 

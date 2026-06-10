@@ -125,5 +125,30 @@ int32_t AndroidApp::_HandleInput(android_app* state, AInputEvent* event) {
         else if (action == AMOTION_EVENT_ACTION_MOVE)  self->_Emit("touchmove");
         return 1;
     }
+
+    if (AInputEvent_getType(event) == AINPUT_EVENT_TYPE_KEY) {
+    if (AKeyEvent_getAction(event) == AKEY_EVENT_ACTION_DOWN) {
+        int32_t keyCode   = AKeyEvent_getKeyCode(event);
+        int32_t metaState = AKeyEvent_getMetaState(event);
+
+        JNIEnv* env = nullptr;
+        self->GetActivity()->vm->GetEnv((void**)&env, JNI_VERSION_1_6);
+        jclass  kc  = env->FindClass("android/view/KeyEvent");
+        jobject ke  = env->NewObject(kc,
+                        env->GetMethodID(kc, "<init>", "(II)V"),
+                        (jint)AKEY_EVENT_ACTION_DOWN, (jint)keyCode);
+        int32_t uni = (int32_t)env->CallIntMethod(ke,
+                        env->GetMethodID(kc, "getUnicodeChar", "(I)I"),
+                        (jint)metaState);
+        env->DeleteLocalRef(ke);
+        env->DeleteLocalRef(kc);
+
+        self->m_LastKeyCode = keyCode;
+        self->m_LastUnicode = uni;
+        self->_Emit("keydown");
+    }
+    return 1;
+}
+
     return 0;
 }

@@ -108,6 +108,17 @@ public:
     void _Emit(const std::string& event) { m_Listeners.emit(event); }
 
     ANativeWindow* m_Window = nullptr;
+    
+    int32_t GetLastKeyCode() const { return m_LastKeyCode; }
+    int32_t GetLastUnicode()  const { return m_LastUnicode; }
+    
+    bool DispatchTouch(float x, float y);
+    void DispatchTouchMove(float x, float y);
+    void DispatchRelease(float x, float y);
+    void DispatchKey(int32_t keyCode, int32_t unicode);
+    
+    int32_t m_LastKeyCode = 0;
+    int32_t m_LastUnicode = 0;
 
 private:
     _BananaInternal::ListenerMap m_Listeners;

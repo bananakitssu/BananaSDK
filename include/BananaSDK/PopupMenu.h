@@ -17,7 +17,7 @@ public:
 
     void Draw(UIRenderer& ui);
     bool OnTouch(float x, float y);
-    void OnRelease();
+    void OnRelease(float x, float y);
 
 protected:
     struct Item {

@@ -5,6 +5,10 @@
 Text::Text(float x, float y, const std::string& text, float maxWidth, float fontSize)
     : m_X(x), m_Y(y), m_Text(text), m_MaxWidth(maxWidth), m_FontSize(fontSize) {}
 
+bool Text::HitTest(float x, float y) const { return false; }
+void Text::OnTouch(float x, float y)       {}
+void Text::OnTouchMove(float x, float y)   {}
+void Text::OnRelease(float x, float y)     {}
 void Text::SetPosition(float x, float y)                { m_X = x; m_Y = y; }
 void Text::SetText(const std::string& text)              { m_Text = text; }
 void Text::SetFontSize(float size)                       { m_FontSize = size; }
