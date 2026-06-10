@@ -31,7 +31,8 @@ void AndroidAppDev::_Init(android_app* state) {
     });
 
     addListener("touchend", [this]() {
-        m_DevMenu.OnRelease();
+        if (m_DevMenu.IsVisible())
+            m_DevMenu.OnRelease(GetTouchX(), GetTouchY());
     });
     
     AndroidApp::_Init(state);
