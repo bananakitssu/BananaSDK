@@ -31,6 +31,9 @@ public:
     int  GetHeight() const { return m_Height; }
     bool IsReady()   const { return m_Ready; }
 
+    void PushScissor(float x, float y, float w, float h);
+    void PopScissor();
+
 private:
     GLuint CompileShader(GLenum type, const char* src);
     GLuint CreateProgram(const char* vert, const char* frag);

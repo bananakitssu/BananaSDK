@@ -355,3 +355,15 @@ void UIRenderer::DrawText(float x, float y, const std::string& text,
 
     glDeleteTextures(1, &tt.id);
 }
+
+// Other stuff
+
+void UIRenderer::PushScissor(float x, float y, float w, float h) {
+    glEnable(GL_SCISSOR_TEST);
+    // Convert from top-left coords to OpenGL bottom-left
+    glScissor((GLint)x, (GLint)(m_Height - y - h), (GLsizei)w, (GLsizei)h);
+}
+
+void UIRenderer::PopScissor() {
+    glDisable(GL_SCISSOR_TEST);
+}
