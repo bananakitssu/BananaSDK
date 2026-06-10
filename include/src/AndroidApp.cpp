@@ -37,8 +37,6 @@ void AndroidApp::_Init(android_app* state) {
 
         _Emit("frame");
     }
-    
-    if (f) fclose(f);
 }
 
 void AndroidApp::_HandleCmd(android_app* state, int32_t cmd) {
