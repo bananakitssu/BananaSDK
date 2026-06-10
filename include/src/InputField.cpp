@@ -131,26 +131,40 @@ void InputField::Draw(UIRenderer& ui) {
     m_LastTime = now;
     if (m_Focused) { m_CursorBlink += dt; if (m_CursorBlink > 1.0f) m_CursorBlink -= 1.0f; }
 
-    /*if (m_Focused)
-        ui.DrawRect(m_X-2, m_Y-2, m_W+4, m_H+4, 0.0f, 0.478f, 1.0f, 1.0f, m_Radius+2);
-
-    ui.DrawRect(m_X, m_Y, m_W, m_H, m_BgR, m_BgG, m_BgB, 1.0f, m_Radius);*/
-    
     float r = std::min(m_Radius, std::min(m_W, m_H) / 2.0f);
 
+    // Focus ring
     if (m_Focused)
         ui.DrawRect(m_X-2, m_Y-2, m_W+4, m_H+4, 0.0f, 0.478f, 1.0f, 1.0f, r+2);
 
+    // Background
     ui.DrawRect(m_X, m_Y, m_W, m_H, m_BgR, m_BgG, m_BgB, 1.0f, r);
 
+    float pad = 12.0f;
+    float maxTextW = m_W - pad * 2;
     float ty = m_Y + (m_H - m_FontSize) * 0.5f;
-    if (m_Text.empty() && !m_Placeholder.empty())
-        ui.DrawText(m_X+12, ty, m_Placeholder, 0.65f, 0.65f, 0.65f, 1.0f, m_FontSize);
-    else
-        ui.DrawText(m_X+12, ty, m_Text, 0.1f, 0.1f, 0.1f, 1.0f, m_FontSize);
 
-    if (m_Focused && m_CursorBlink < 0.5f) {
-        float cx = m_X + 12.0f + ui.MeasureText(m_Text, m_FontSize);
-        ui.DrawRect(cx, ty, 2.0f, m_FontSize, 0.0f, 0.478f, 1.0f, 1.0f);
+    // Clip region — draw background again as a mask to cut off overflow
+    // by scissoring text to [m_X+pad, m_X+m_W-pad]
+    ui.PushScissor(m_X + pad, m_Y, maxTextW, m_H);
+
+    if (m_Text.empty() && !m_Placeholder.empty()) {
+        ui.DrawText(m_X + pad, ty, m_Placeholder, 0.65f, 0.65f, 0.65f, 1.0f, m_FontSize);
+    } else {
+        // Scroll text left if it overflows
+        float textW = ui.MeasureText(m_Text, m_FontSize);
+        float tx = m_X + pad;
+        if (textW > maxTextW)
+            tx = m_X + pad - (textW - maxTextW);
+        ui.DrawText(tx, ty, m_Text, 0.1f, 0.1f, 0.1f, 1.0f, m_FontSize);
+
+        // Cursor at end of visible text
+        if (m_Focused && m_CursorBlink < 0.5f) {
+            float cx = tx + textW;
+            if (cx > m_X + m_W - pad) cx = m_X + m_W - pad;
+            ui.DrawRect(cx + 2, ty, 2.0f, m_FontSize, 0.0f, 0.478f, 1.0f, 1.0f);
+        }
     }
+
+    ui.PopScissor();
 }
