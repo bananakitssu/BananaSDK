@@ -30,44 +30,6 @@ void AndroidApp::_Init(android_app* state) {
     state->onAppCmd  = _HandleCmd;
     state->onInputEvent = _HandleInput;
 
-    // Write log to multiple paths
-    FILE* f = nullptr;
-    const char* logPaths[] = {
-        "/sdcard/bananasdk_log.txt",
-        "/data/local/tmp/bananasdk_log.txt"
-    };
-    for (int i = 0; i < 2; i++) {
-        f = fopen(logPaths[i], "w");
-        if (f) break;
-    }
-    
-    g_crashLog = f;
-    
-    if (f) { 
-        fprintf(f, "BananaSDK native code started\n"); 
-        fflush(f);
-    }
-
-    try {
-        if (f) { fprintf(f, "Calling Main()...\n"); fflush(f); }
-        Main();
-        if (f) { fprintf(f, "Main() completed successfully\n"); fflush(f); }
-    } catch (const std::exception& e) {
-        if (f) { 
-            fprintf(f, "Exception in Main(): %s\n", e.what()); 
-            fflush(f);
-        }
-        if (f) fclose(f);
-        throw;
-    } catch (...) {
-        if (f) { 
-            fprintf(f, "Unknown exception in Main()\n"); 
-            fflush(f);
-        }
-        if (f) fclose(f);
-        throw;
-    }
-
     while (true) {
         int events;
         android_poll_source* source;
@@ -77,10 +39,6 @@ void AndroidApp::_Init(android_app* state) {
             source->process(state, source);
 
         if (state->destroyRequested) {
-            if (f) { 
-                fprintf(f, "Destroy requested\n"); 
-                fflush(f);
-            }
             _Emit("destroy");
             break;
         }
@@ -127,34 +85,34 @@ int32_t AndroidApp::_HandleInput(android_app* state, AInputEvent* event) {
     }
 
     if (AInputEvent_getType(event) == AINPUT_EVENT_TYPE_KEY) {
-    if (AKeyEvent_getAction(event) == AKEY_EVENT_ACTION_DOWN) {
-        int32_t keyCode   = AKeyEvent_getKeyCode(event);
-        int32_t metaState = AKeyEvent_getMetaState(event);
+        if (AKeyEvent_getAction(event) == AKEY_EVENT_ACTION_DOWN) {
+            int32_t keyCode   = AKeyEvent_getKeyCode(event);
+            int32_t metaState = AKeyEvent_getMetaState(event);
 
-        JNIEnv* env = nullptr;
-        bool attached = false;
-        jint res = self->GetActivity()->vm->GetEnv((void**)&env, JNI_VERSION_1_6);
-        if (res == JNI_EDETACHED) {
-            self->GetActivity()->vm->AttachCurrentThread(&env, nullptr);
-            attached = true;
+            JNIEnv* env = nullptr;
+            bool attached = false;
+            jint res = self->GetActivity()->vm->GetEnv((void**)&env, JNI_VERSION_1_6);
+            if (res == JNI_EDETACHED) {
+                self->GetActivity()->vm->AttachCurrentThread(&env, nullptr);
+                attached = true;
+            }
+
+            jclass  kc  = env->FindClass("android/view/KeyEvent");
+            jobject ke  = env->NewObject(kc, env->GetMethodID(kc, "<init>", "(II)V"),
+                                         (jint)AKEY_EVENT_ACTION_DOWN, (jint)keyCode);
+            int32_t uni = (int32_t)env->CallIntMethod(ke,
+                            env->GetMethodID(kc, "getUnicodeChar", "(I)I"), (jint)metaState);
+            env->DeleteLocalRef(ke);
+            env->DeleteLocalRef(kc);
+        
+            if (attached) self->GetActivity()->vm->DetachCurrentThread();
+
+            self->m_LastKeyCode = keyCode;
+            self->m_LastUnicode = uni;
+            self->_Emit("keydown");
         }
-
-        jclass  kc  = env->FindClass("android/view/KeyEvent");
-        jobject ke  = env->NewObject(kc, env->GetMethodID(kc, "<init>", "(II)V"),
-                                     (jint)AKEY_EVENT_ACTION_DOWN, (jint)keyCode);
-        int32_t uni = (int32_t)env->CallIntMethod(ke,
-                        env->GetMethodID(kc, "getUnicodeChar", "(I)I"), (jint)metaState);
-        env->DeleteLocalRef(ke);
-        env->DeleteLocalRef(kc);
-
-        if (attached) self->GetActivity()->vm->DetachCurrentThread();
-
-        self->m_LastKeyCode = keyCode;
-        self->m_LastUnicode = uni;
-        self->_Emit("keydown");
+        return 1;
     }
-    return 1;
-}
 
     return 0;
 }
@@ -163,7 +121,7 @@ bool AndroidApp::DispatchTouch(float x, float y) {
     for (auto& el : m_Elements) {
         std::visit([&](auto& ptr) {
             using T = std::decay_t<decltype(*ptr)>;
-            if constexpr (std::is_same_v<T, InputField>)
+            if constexpr (std::is_same_v<T, InputField> || std::is_same_v<T, Textarea>)
                 if (!ptr->HitTest(x, y) && ptr->IsFocused())
                     ptr->OnFocusLost();
         }, el);
@@ -194,7 +152,7 @@ void AndroidApp::DispatchKey(int32_t keyCode, int32_t unicode) {
     for (auto& el : m_Elements) {
         std::visit([keyCode, unicode](auto& ptr) {
             using T = std::decay_t<decltype(*ptr)>;
-            if constexpr (std::is_same_v<T, InputField>)
+            if constexpr (std::is_same_v<T, InputField> || std::is_same_v<T, Textarea>)
                 ptr->OnKey(keyCode, unicode);
         }, el);
     }

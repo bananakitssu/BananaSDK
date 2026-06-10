@@ -36,6 +36,15 @@ public:
             myInput->SetOnSubmit([](const std::string& text) {
                 // do absolutely nothing
             });
+            auto myTextarea = std::make_shared<Textarea>(
+                myButton->GetX() + myButton->GetW() + 12.0f,
+                myButton->GetY(),
+                200.0f,
+                myButton->GetH() + myInput->GetH() + 12.0f
+            );
+            myTextarea->SetActivity(getActivity());
+            myTextarea->SetPlaceholder("Type here...");
+            addElement(myTextarea);
             addElement(myInput);
             addElement(myButton);
             myButton->SetOnClick([&]() {
