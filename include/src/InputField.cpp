@@ -3,7 +3,9 @@
 #include <android/input.h>
 
 InputField::InputField(float x, float y, float w, float h)
-    : m_X(x), m_Y(y), m_W(w), m_H(h) {}
+    : m_X(x), m_Y(y), m_W(w), m_H(h),
+      m_Radius(9999.0f),
+      m_BgR(0.80f), m_BgG(0.80f), m_BgB(0.82f) {}
 
 void InputField::SetActivity(ANativeActivity* a)                         { m_Activity = a; }
 void InputField::SetPlaceholder(const std::string& t)                    { m_Placeholder = t; }
@@ -37,14 +39,61 @@ void InputField::OnFocusLost() { _Unfocus(); }
 
 void InputField::_Focus() {
     m_Focused = true;
-    if (m_Activity)
-        ANativeActivity_showSoftInput(m_Activity, ANATIVEACTIVITY_SHOW_SOFT_INPUT_IMPLICIT);
+    if (!m_Activity) return;
+
+    JNIEnv* env = nullptr;
+    m_Activity->vm->AttachCurrentThread(&env, nullptr);
+
+    jclass    actClass  = env->GetObjectClass(m_Activity->clazz);
+    jobject   window    = env->CallObjectMethod(m_Activity->clazz,
+                            env->GetMethodID(actClass, "getWindow", "()Landroid/view/Window;"));
+    jobject   decorView = env->CallObjectMethod(window,
+                            env->GetMethodID(env->GetObjectClass(window), "getDecorView", "()Landroid/view/View;"));
+    jstring   svc       = env->NewStringUTF("input_method");
+    jobject   imm       = env->CallObjectMethod(m_Activity->clazz,
+                            env->GetMethodID(actClass, "getSystemService", "(Ljava/lang/String;)Ljava/lang/Object;"), svc);
+
+    env->CallBooleanMethod(imm,
+        env->GetMethodID(env->GetObjectClass(imm), "showSoftInput", "(Landroid/view/View;I)Z"),
+        decorView, (jint)0);
+
+    env->DeleteLocalRef(svc);
+    env->DeleteLocalRef(imm);
+    env->DeleteLocalRef(decorView);
+    env->DeleteLocalRef(window);
+    env->DeleteLocalRef(actClass);
+    m_Activity->vm->DetachCurrentThread();
 }
 
 void InputField::_Unfocus() {
     m_Focused = false;
-    if (m_Activity)
-        ANativeActivity_hideSoftInput(m_Activity, ANATIVEACTIVITY_HIDE_SOFT_INPUT_NOT_ALWAYS);
+    if (!m_Activity) return;
+
+    JNIEnv* env = nullptr;
+    m_Activity->vm->AttachCurrentThread(&env, nullptr);
+
+    jclass  actClass  = env->GetObjectClass(m_Activity->clazz);
+    jobject window    = env->CallObjectMethod(m_Activity->clazz,
+                          env->GetMethodID(actClass, "getWindow", "()Landroid/view/Window;"));
+    jobject decorView = env->CallObjectMethod(window,
+                          env->GetMethodID(env->GetObjectClass(window), "getDecorView", "()Landroid/view/View;"));
+    jstring svc       = env->NewStringUTF("input_method");
+    jobject imm       = env->CallObjectMethod(m_Activity->clazz,
+                          env->GetMethodID(actClass, "getSystemService", "(Ljava/lang/String;)Ljava/lang/Object;"), svc);
+
+    jobject binder = env->CallObjectMethod(decorView,
+                       env->GetMethodID(env->GetObjectClass(decorView), "getWindowToken", "()Landroid/os/IBinder;"));
+    env->CallBooleanMethod(imm,
+        env->GetMethodID(env->GetObjectClass(imm), "hideSoftInputFromWindow", "(Landroid/os/IBinder;I)Z"),
+        binder, (jint)0);
+
+    env->DeleteLocalRef(binder);
+    env->DeleteLocalRef(svc);
+    env->DeleteLocalRef(imm);
+    env->DeleteLocalRef(decorView);
+    env->DeleteLocalRef(window);
+    env->DeleteLocalRef(actClass);
+    m_Activity->vm->DetachCurrentThread();
 }
 
 bool InputField::OnKey(int32_t keyCode, int32_t unicode) {
@@ -85,7 +134,7 @@ void InputField::Draw(UIRenderer& ui) {
     if (m_Focused)
         ui.DrawRect(m_X-2, m_Y-2, m_W+4, m_H+4, 0.0f, 0.478f, 1.0f, 1.0f, m_Radius+2);
 
-    ui.DrawRect(m_X, m_Y, m_W, m_H, 1.0f, 1.0f, 1.0f, 1.0f, m_Radius);
+    ui.DrawRect(m_X, m_Y, m_W, m_H, m_BgR, m_BgG, m_BgB, 1.0f, m_Radius);
 
     float ty = m_Y + (m_H - m_FontSize) * 0.5f;
     if (m_Text.empty() && !m_Placeholder.empty())
