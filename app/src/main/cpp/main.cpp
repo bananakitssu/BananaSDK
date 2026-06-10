@@ -27,9 +27,9 @@ public:
             //myButton.SetRadius(20.0f);
             auto myInput = std::make_shared<InputField>(
                 myButton->GetX(),
-                myButton->GetY() + 70.0f,
+                myButton->GetY() + myButton->GetH() + 12.0f,
                 myButton->GetW(),
-                50.0f
+                myButton->GetH()
             );
             myInput->SetActivity(getActivity());
             myInput->SetPlaceholder("Type something...");
