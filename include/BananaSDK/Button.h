@@ -27,10 +27,10 @@ public:
     void OnTouchMove(float x, float y);
     void OnRelease(float x, float y);
 
-    float GetY() { return m_Y };
-    float GetX() { return m_X };
-    float GetW() { return m_W };
-    float GetH() { return m_H };
+    float GetY() { return m_Y; }
+    float GetX() { return m_X; }
+    float GetW() { return m_W; }
+    float GetH() { return m_H; }
 
     void Draw(UIRenderer& ui);
 
