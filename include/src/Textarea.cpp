@@ -11,7 +11,7 @@ Textarea::Textarea(float x, float y, float w, float h)
 
 void Textarea::SetActivity(ANativeActivity* a)                         { m_Activity = a; }
 void Textarea::SetPlaceholder(const std::string& t)                    { m_Placeholder = t; }
-void Textarea::SetText(const std::string& t)                           { m_Text = t; }
+void Textarea::SetText(const std::string& t)                           { m_Text = t; m_LinesDirty = true; }
 void Textarea::SetFontSize(float s)                                    { m_FontSize = s; }
 void Textarea::SetRadius(float r)                                      { m_Radius = r; }
 void Textarea::SetLineSpacing(float s)                                 { m_LineSpacing = s; }
@@ -98,12 +98,14 @@ bool Textarea::OnKey(int32_t keyCode, int32_t unicode) {
             m_Text.erase(i);
             if (m_OnChange) m_OnChange(m_Text);
         }
+        m_LinesDirty = true;
         return true;
     }
 
     if (keyCode == AKEYCODE_ENTER || keyCode == AKEYCODE_NUMPAD_ENTER) {
         m_Text += '\n';
         if (m_OnChange) m_OnChange(m_Text);
+        m_LinesDirty = true;
         return true;
     }
 
@@ -112,6 +114,7 @@ bool Textarea::OnKey(int32_t keyCode, int32_t unicode) {
         else if (unicode < 0x800) { m_Text += (char)(0xC0|(unicode>>6)); m_Text += (char)(0x80|(unicode&0x3F)); }
         else                      { m_Text += (char)(0xE0|(unicode>>12)); m_Text += (char)(0x80|((unicode>>6)&0x3F)); m_Text += (char)(0x80|(unicode&0x3F)); }
         if (m_OnChange) m_OnChange(m_Text);
+        m_LinesDirty = true;
         return true;
     }
 
@@ -119,10 +122,11 @@ bool Textarea::OnKey(int32_t keyCode, int32_t unicode) {
 }
 
 std::vector<std::string> Textarea::_GetLines(UIRenderer& ui) {
-    std::vector<std::string> result;
+    if (!m_LinesDirty) return m_LinesCache;
+
+    m_LinesCache.clear();
     float maxW = m_W - 24.0f;
 
-    // Split into paragraphs by \n, word-wrap each
     std::vector<std::string> paragraphs;
     std::string para;
     for (char c : m_Text) {
@@ -132,23 +136,24 @@ std::vector<std::string> Textarea::_GetLines(UIRenderer& ui) {
     paragraphs.push_back(para);
 
     for (auto& p : paragraphs) {
-        if (p.empty()) { result.push_back(""); continue; }
+        if (p.empty()) { m_LinesCache.push_back(""); continue; }
         std::istringstream stream(p);
         std::string word, currentLine;
         while (stream >> word) {
             std::string candidate = currentLine.empty() ? word : currentLine + " " + word;
             if (ui.MeasureText(candidate, m_FontSize) > maxW && !currentLine.empty()) {
-                result.push_back(currentLine);
+                m_LinesCache.push_back(currentLine);
                 currentLine = word;
             } else {
                 currentLine = candidate;
             }
         }
-        if (!currentLine.empty()) result.push_back(currentLine);
+        if (!currentLine.empty()) m_LinesCache.push_back(currentLine);
     }
 
-    if (result.empty()) result.push_back("");
-    return result;
+    if (m_LinesCache.empty()) m_LinesCache.push_back("");
+    m_LinesDirty = false;
+    return m_LinesCache;
 }
 
 void Textarea::Draw(UIRenderer& ui) {
