@@ -177,12 +177,18 @@ void Textarea::Draw(UIRenderer& ui) {
         float contentH = lines.size() * lineH + pad * 2.0f;
         m_LastContentH = contentH;
 
-        // Auto-scroll to keep last line (cursor) visible when typing
-        float maxScroll  = std::max(0.0f, contentH - m_H);
-        float lastLineBottom = pad + (float)lines.size() * lineH;
-        if (m_Focused && lastLineBottom - m_ScrollOffset > m_H - pad)
-            m_ScrollOffset = lastLineBottom - m_H + pad;
-        m_ScrollOffset = std::max(0.0f, std::min(m_ScrollOffset, maxScroll));
+        float contentH     = (float)lines.size() * lineH + pad * 2.0f;
+        m_LastContentH     = contentH;
+        float maxScroll    = std::max(0.0f, contentH - m_H);
+        
+        if (m_Focused && !m_Text.empty()) {
+            float lastLineBottom = pad + (float)lines.size() * lineH;
+            if (lastLineBottom - m_ScrollOffset > m_H - pad)
+                m_ScrollOffset = lastLineBottom - m_H + pad;
+            }
+                            
+            m_ScrollOffset = std::max(0.0f, std::min(m_ScrollOffset, maxScroll));
+        }
 
         for (size_t i = 0; i < lines.size(); i++) {
             float ly = m_Y + pad + (float)i * lineH - m_ScrollOffset;
