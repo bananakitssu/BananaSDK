@@ -52,6 +52,8 @@ private:
     float m_LastContentH = 0.0f;
     float m_TouchStartY  = 0.0f;
     float m_CursorBlink  = 0.0f;
+    std::vector<std::string> m_LinesCache;
+    bool m_LinesDirty = true;
     std::chrono::steady_clock::time_point m_LastTime;
     ANativeActivity* m_Activity = nullptr;
     std::function<void(const std::string&)> m_OnChange;

@@ -55,9 +55,9 @@ public:
         });
 
         addListener("touchstart", [this]() { DispatchTouch(GetTouchX(), GetTouchY()); });
-addListener("touchmove",  [this]() { DispatchTouchMove(GetTouchX(), GetTouchY()); });
-addListener("touchend",   [this]() { DispatchRelease(GetTouchX(), GetTouchY()); });
-addListener("keydown",    [this]() { DispatchKey(GetLastKeyCode(), GetLastUnicode()); });
+        addListener("touchmove",  [this]() { DispatchTouchMove(GetTouchX(), GetTouchY()); });
+        addListener("touchend",   [this]() { DispatchRelease(GetTouchX(), GetTouchY()); });
+        addListener("keydown",    [this]() { DispatchKey(GetLastKeyCode(), GetLastUnicode()); });
 
         /*addListener("frame", [this]() {
             renderer.BeginFrame();
