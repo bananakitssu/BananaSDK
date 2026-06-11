@@ -129,7 +129,9 @@ bool UIRenderer::Init(ANativeActivity* activity, std::variant<AndroidApp*, Andro
                 
                 for (auto& element : app_->getElements()) {
                     std::visit([this](auto& visualItem) {
-                        visualItem->Draw(*this);
+                        using T = std::decay_t<decltype(*visualItem)>;
+                        if constexpr (!std::is_same_v<T, Textarea>)
+                            visualItem->Draw(*this);
                         //using ItemType = std::decay_t<decltype(visualItem)>;
                         //const_cast<ItemType&>(visualItem)->Draw(*this);
                     }, element);
