@@ -21,6 +21,8 @@ void AndroidApp::_Init(android_app* state) {
     state->userData  = this;
     state->onAppCmd  = _HandleCmd;
     state->onInputEvent = _HandleInput;
+    
+    Main();
 
     while (true) {
         int events;
