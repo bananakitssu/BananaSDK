@@ -76,7 +76,8 @@ bool Renderer::Init(ANativeWindow* window) {
 
 void Renderer::BeginFrame() {
     if (!m_Ready) return;
-    glClearColor(m_R, m_G, m_B, 1.0f);
+    glDisable(GL_SCISSOR_TEST);
+    glClearColor(m_CR, m_CG, m_CB, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
 }
 
