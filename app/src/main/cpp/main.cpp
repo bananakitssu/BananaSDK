@@ -44,8 +44,8 @@ public:
             );
             myTextarea->SetActivity(getActivity());
             myTextarea->SetPlaceholder("Type here...");
-            //addElement(myTextarea);
-            //addElement(myInput);
+            addElement(myTextarea);
+            addElement(myInput);
             addElement(myButton);
             myButton->SetOnClick([&]() {
                 buttonRadius -= 1.0f;
