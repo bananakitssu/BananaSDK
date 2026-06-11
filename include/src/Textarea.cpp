@@ -173,22 +173,19 @@ void Textarea::Draw(UIRenderer& ui) {
     if (m_Text.empty() && !m_Placeholder.empty()) {
         ui.DrawText(m_X + pad, m_Y + pad, m_Placeholder, 0.65f, 0.65f, 0.65f, 1.0f, m_FontSize);
     } else {
-        auto  lines    = _GetLines(ui);
-        float contentH = lines.size() * lineH + pad * 2.0f;
-        m_LastContentH = contentH;
+        auto lines = _GetLines(ui);
 
-        float contentH     = (float)lines.size() * lineH + pad * 2.0f;
-        m_LastContentH     = contentH;
-        float maxScroll    = std::max(0.0f, contentH - m_H);
-        
+        float contentH  = (float)lines.size() * lineH + pad * 2.0f;
+        m_LastContentH  = contentH;
+        float maxScroll = std::max(0.0f, contentH - m_H);
+
         if (m_Focused && !m_Text.empty()) {
             float lastLineBottom = pad + (float)lines.size() * lineH;
             if (lastLineBottom - m_ScrollOffset > m_H - pad)
                 m_ScrollOffset = lastLineBottom - m_H + pad;
-            }
-                            
-            m_ScrollOffset = std::max(0.0f, std::min(m_ScrollOffset, maxScroll));
         }
+
+        m_ScrollOffset = std::max(0.0f, std::min(m_ScrollOffset, maxScroll));
 
         for (size_t i = 0; i < lines.size(); i++) {
             float ly = m_Y + pad + (float)i * lineH - m_ScrollOffset;
@@ -197,7 +194,6 @@ void Textarea::Draw(UIRenderer& ui) {
             ui.DrawText(m_X + pad, ly, lines[i], 0.1f, 0.1f, 0.1f, 1.0f, m_FontSize);
         }
 
-        // Cursor at end of last line
         if (m_Focused && m_CursorBlink < 0.5f && !lines.empty()) {
             size_t last = lines.size() - 1;
             float cy = m_Y + pad + (float)last * lineH - m_ScrollOffset;
