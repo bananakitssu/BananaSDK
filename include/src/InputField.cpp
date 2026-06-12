@@ -6,6 +6,8 @@ InputField::InputField(float x, float y, float w, float h)
     : m_X(x), m_Y(y), m_W(w), m_H(h),
       m_Radius(9999.0f),
       m_BgR(0.80f), m_BgG(0.80f), m_BgB(0.82f) {}
+      
+extern AndroidApp* g_AppInstance;
 
 void InputField::SetActivity(ANativeActivity* a)                         { m_Activity = a; }
 void InputField::SetPlaceholder(const std::string& t)                    { m_Placeholder = t; }
@@ -66,6 +68,7 @@ void InputField::_Focus() {
     env->CallVoidMethod(m_Activity->clazz, mid, jtext, (jboolean)JNI_FALSE);
     env->DeleteLocalRef(jtext);
     env->DeleteLocalRef(cls);
+    if (g_AppInstance) g_AppInstance->SetImeFocused(true);
     if (attached) m_Activity->vm->DetachCurrentThread();
 }
 
@@ -82,6 +85,7 @@ void InputField::_Unfocus() {
     jmethodID mid = env->GetMethodID(cls, "hideEditInput", "()V");
     env->CallVoidMethod(m_Activity->clazz, mid);
     env->DeleteLocalRef(cls);
+    if (g_AppInstance) g_AppInstance->SetImeFocused(false);
     if (attached) m_Activity->vm->DetachCurrentThread();
 }
 

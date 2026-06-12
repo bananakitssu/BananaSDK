@@ -43,7 +43,7 @@ private:
 
     float m_X=0, m_Y=0, m_W=0, m_H=0;
     float m_FontSize     = 32.0f;
-    float m_Radius       = 12.0f;
+    float m_Radius       = 24.0f;
     float m_LineSpacing  = 4.0f;
     float m_BgR=0.80f, m_BgG=0.80f, m_BgB=0.82f;
     std::string m_Text;

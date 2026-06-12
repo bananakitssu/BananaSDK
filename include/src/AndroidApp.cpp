@@ -81,6 +81,8 @@ int32_t AndroidApp::_HandleInput(android_app* state, AInputEvent* event) {
     }
 
     if (AInputEvent_getType(event) == AINPUT_EVENT_TYPE_KEY) {
+        if (self->IsImeFocused()) return 0;
+        
         if (AKeyEvent_getAction(event) == AKEY_EVENT_ACTION_DOWN) {
             int32_t keyCode   = AKeyEvent_getKeyCode(event);
             int32_t metaState = AKeyEvent_getMetaState(event);

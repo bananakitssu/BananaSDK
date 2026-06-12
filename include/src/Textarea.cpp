@@ -8,6 +8,8 @@
 
 Textarea::Textarea(float x, float y, float w, float h)
     : m_X(x), m_Y(y), m_W(w), m_H(h) {}
+    
+extern AndroidApp* g_AppInstance;
 
 void Textarea::SetActivity(ANativeActivity* a)                         { m_Activity = a; }
 void Textarea::SetPlaceholder(const std::string& t)                    { m_Placeholder = t; }
@@ -76,6 +78,7 @@ void Textarea::_Focus() {
     env->CallVoidMethod(m_Activity->clazz, mid, jtext, (jboolean)JNI_TRUE);
     env->DeleteLocalRef(jtext);
     env->DeleteLocalRef(cls);
+    if (g_AppInstance) g_AppInstance->SetImeFocused(true);
     if (attached) m_Activity->vm->DetachCurrentThread();
 }
 
@@ -92,6 +95,7 @@ void Textarea::_Unfocus() {
     jmethodID mid = env->GetMethodID(cls, "hideEditInput", "()V");
     env->CallVoidMethod(m_Activity->clazz, mid);
     env->DeleteLocalRef(cls);
+    if (g_AppInstance) g_AppInstance->SetImeFocused(false);
     if (attached) m_Activity->vm->DetachCurrentThread();
 }
 
