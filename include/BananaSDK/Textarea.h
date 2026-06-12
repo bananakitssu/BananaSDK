@@ -33,6 +33,8 @@ public:
 
     void Draw(UIRenderer& ui);
 
+    void OnTextCommit(const std::string& text);
+
 private:
     void _Focus();
     void _Unfocus();
@@ -55,6 +57,7 @@ private:
     float m_ScrollOffsetX = 0.0f;
     float m_TouchStartX   = 0.0f;
     float m_LastMaxScrollX = 0.0f;
+    size_t m_PrevTextLen = 0;
     std::vector<std::string> m_LinesCache;
     bool m_LinesDirty = true;
     std::chrono::steady_clock::time_point m_LastTime;

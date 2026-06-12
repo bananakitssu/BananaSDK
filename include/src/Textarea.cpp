@@ -187,9 +187,10 @@ void Textarea::Draw(UIRenderer& ui) {
         m_LastContentH  = contentH;
 
         float maxScroll = std::max(0.0f, contentH - m_H);
-        if (contentH != m_LastContentH)
+        if (m_Text.size() != m_PrevTextLen) {
             m_ScrollOffset = maxScroll;
-        m_LastContentH = contentH;
+            m_PrevTextLen  = m_Text.size();
+        }
         m_ScrollOffset = std::max(0.0f, std::min(m_ScrollOffset, maxScroll));
 
         float maxLineW = 0.0f;
@@ -215,4 +216,10 @@ void Textarea::Draw(UIRenderer& ui) {
     }
     
     ui.PopScissor();
+}
+
+void Textarea::OnTextCommit(const std::string& text) {
+    m_Text += text;
+    m_LinesDirty = true;
+    if (m_OnChange) m_OnChange(m_Text);
 }
