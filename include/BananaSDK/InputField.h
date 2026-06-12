@@ -36,6 +36,8 @@ public:
 
     void Draw(UIRenderer& ui);
 
+    void OnTextCommit(const std::string& text);
+
 private:
     void _Focus();
     void _Unfocus();
@@ -53,6 +55,7 @@ private:
     bool  m_Focused     = false;
     bool  m_IsDown      = false;
     float m_CursorBlink = 0.0f;
+    size_t m_PrevTextLen = 0;
     bool m_TextChanged = false;
     std::chrono::steady_clock::time_point m_LastTime;
     ANativeActivity* m_Activity = nullptr;

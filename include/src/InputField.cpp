@@ -166,9 +166,10 @@ void InputField::Draw(UIRenderer& ui) {
 
         // Auto-scroll to keep cursor (end of text) visible when focused
         float maxScroll = std::max(0.0f, textW - maxTextW);
-        if (textW != m_LastTextW)
+        if (m_Text.size() != m_PrevTextLen) {
             m_ScrollOffset = maxScroll;
-        m_LastTextW = textW;
+            m_PrevTextLen  = m_Text.size();
+        }
         m_ScrollOffset = std::max(0.0f, std::min(m_ScrollOffset, maxScroll));
 
         float tx = m_X + pad - m_ScrollOffset;
@@ -182,4 +183,9 @@ void InputField::Draw(UIRenderer& ui) {
     }
 
     ui.PopScissor();
+}
+
+void InputField::OnTextCommit(const std::string& text) {
+    m_Text += text;
+    if (m_OnChange) m_OnChange(m_Text);
 }

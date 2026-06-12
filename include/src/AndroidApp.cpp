@@ -8,6 +8,8 @@
 #include "BananaSDK/AndroidApp.h"
 #include "BananaSDK/UI.h"
 
+extern AndroidApp* g_AppInstance;
+
 void signalHandler(int sig) {
     std::exit(1);
 }
@@ -21,6 +23,8 @@ void AndroidApp::_Init(android_app* state) {
     state->userData  = this;
     state->onAppCmd  = _HandleCmd;
     state->onInputEvent = _HandleInput;
+
+    g_AppInstance = this;
     
     Main();
 
@@ -146,6 +150,17 @@ void AndroidApp::DispatchKey(int32_t keyCode, int32_t unicode) {
             using T = std::decay_t<decltype(*ptr)>;
             if constexpr (std::is_same_v<T, InputField> || std::is_same_v<T, Textarea>)
                 ptr->OnKey(keyCode, unicode);
+        }, el);
+    }
+}
+
+void AndroidApp::OnTextCommit(const std::string& text) {
+    for (auto& el : m_Elements) {
+        std::visit([&text](auto& ptr) {
+            using T = std::decay_t<decltype(*ptr)>;
+            if constexpr (std::is_same_v<T, InputField> || std::is_same_v<T, Textarea>)
+                if (ptr->IsFocused())
+                    ptr->OnTextCommit(text);
         }, el);
     }
 }

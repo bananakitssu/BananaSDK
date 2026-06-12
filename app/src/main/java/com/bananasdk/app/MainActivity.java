@@ -6,104 +6,43 @@ import android.util.Log;
 import java.io.FileWriter;
 import android.view.WindowInsets;
 import android.view.WindowInsetsController;
+import android.text.InputType;
+import android.view.inputmethod.BaseInputConnection;
+import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputConnection;
 
 public class MainActivity extends NativeActivity {
     private static final String TAG = "BananaSDK";
 
     static {
         try {
-            // Try multiple log paths - including /documents for Android 14+
-            String[] logPaths = {
-                "/sdcard/bananasdk_start.txt",
-                "/storage/emulated/0/bananasdk_start.txt",
-                "/storage/emulated/0/Documents/bananasdk_start.txt",
-                "/data/data/com.bananasdk.app/bananasdk_start.txt",
-                "/data/local/tmp/bananasdk_start.txt",
-                "/storage/Documents/bananasdk_start.txt",
-                "/documents/bananasdk_start.txt"
-            };
-            
-            String logFile = null;
-            for (String path : logPaths) {
-                try {
-                    FileWriter fw = new FileWriter(path);
-                    fw.write("MainActivity class loading...\n");
-                    fw.close();
-                    logFile = path;
-                    Log.i(TAG, "Using log file: " + path);
-                    break;
-                } catch (Exception e) {
-                    // Try next path
-                }
-            }
-
             System.loadLibrary("bananasdk");
             Log.i(TAG, "Native library loaded successfully");
-            
-            if (logFile != null) {
-                try {
-                    FileWriter fw = new FileWriter(logFile, true);
-                    fw.write("Native library loaded successfully\n");
-                    fw.close();
-                } catch (Exception ex) {}
-            }
         } catch (UnsatisfiedLinkError e) {
             Log.e(TAG, "Failed to load native library: " + e.getMessage(), e);
-            try {
-                FileWriter fw = new FileWriter("/data/local/tmp/bananasdk_start.txt", true);
-                try {
-                    fw.write("ERROR loading native library: " + e.getMessage() + "\n");
-                } finally {
-                    fw.close();
-                }
-            } catch (Exception ex) {}
             throw new RuntimeException("Unable to load native library", e);
         }
     }
 
-@Override
-protected void onCreate(Bundle savedInstanceState) {
-    super.onCreate(savedInstanceState);
-    getWindow().setStatusBarColor(0xFF000000); // black, change to whatever color you want
-}
-
-    /*@Override
-protected void onCreate(Bundle savedInstanceState) {
-    super.onCreate(savedInstanceState);
-    getWindow().setDecorFitsSystemWindows(false);
-    WindowInsetsController c = getWindow().getInsetsController();
-    if (c != null) {
-        c.hide(WindowInsets.Type.statusBars() | WindowInsets.Type.navigationBars());
-        c.setSystemBarsBehavior(
-            WindowInsetsController.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE);
-    }
-}*/
-
-    /*@Override
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
-        try {
-            super.onCreate(savedInstanceState);
-            Log.i(TAG, "MainActivity created successfully");
-            
-            try {
-                FileWriter fw = new FileWriter("/data/local/tmp/bananasdk_start.txt", true);
-                try {
-                    fw.write("onCreate() reached\n");
-                } finally {
-                    fw.close();
-                }
-            } catch (Exception ex) {}
-        } catch (Exception e) {
-            Log.e(TAG, "Error in onCreate: " + e.getMessage(), e);
-            try {
-                FileWriter fw = new FileWriter("/data/local/tmp/bananasdk_start.txt", true);
-                try {
-                    fw.write("ERROR in onCreate: " + e.getMessage() + "\n");
-                } finally {
-                    fw.close();
-                }
-            } catch (Exception ex) {}
-            throw new RuntimeException(e);
-        }
-    }*/
+        super.onCreate(savedInstanceState);
+        getWindow().setStatusBarColor(0xFF000000);
+    }
+
+    public native void nativeOnTextCommit(String text);
+
+    @Override
+    public InputConnection onCreateInputConnection(EditorInfo outAttrs) {
+        outAttrs.inputType  = InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_MULTI_LINE;
+        outAttrs.imeOptions = EditorInfo.IME_FLAG_NO_EXTRACT_UI;
+
+        return new BaseInputConnection(getWindow().getDecorView(), false) {
+            @Override
+            public boolean commitText(CharSequence text, int newCursorPosition) {
+                nativeOnTextCommit(text.toString());
+                return true;
+            }
+        };
+    }
 }
