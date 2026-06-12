@@ -33,7 +33,8 @@ public:
 
     void Draw(UIRenderer& ui);
 
-    void OnTextCommit(const std::string& text);
+    void SetTextFromIME(const std::string& text);
+    void TriggerSubmit(const std::string& text);
 
 private:
     void _Focus();

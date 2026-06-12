@@ -120,7 +120,8 @@ public:
     int32_t m_LastKeyCode = 0;
     int32_t m_LastUnicode = 0;
 
-    void OnTextCommit(const std::string& text);
+    void OnTextChanged(const std::string& text);
+    void OnSubmit(const std::string& text);
 
 private:
     _BananaInternal::ListenerMap m_Listeners;
