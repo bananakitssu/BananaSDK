@@ -1,5 +1,6 @@
 #include "BananaSDK/Textarea.h"
 #include "BananaSDK/UI.h"
+#include "BananaSDK/AndroidApp.h"
 #include <android/input.h>
 #include <jni.h>
 #include <sstream>

@@ -1,5 +1,6 @@
 #include "BananaSDK/InputField.h"
 #include "BananaSDK/UI.h"
+#include "BananaSDK/AndroidApp.h"
 #include <android/input.h>
 
 InputField::InputField(float x, float y, float w, float h)
