@@ -5,7 +5,7 @@ Basically a SDK (Software Development Kit) like Apple's SDK, Android's SDK and M
 Preview of testing the SDK on Android:
     ![Preview](images/preview.png)
     
-It's basically just a yellow screen and a clickable button for now for testing
+It's basically just a yellow screen and a clickable button and an input field and a text area for now for testing
 
 The SDK for Android is being tested using a Debug APK.
 
