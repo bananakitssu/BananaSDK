@@ -33,7 +33,6 @@ bool InputField::OnTouch(float x, float y) {
 
 void InputField::OnTouchMove(float x, float y) {
     if (!m_IsDown) return;
-    if (!HitTest(x, y)) { m_IsDown = false; m_IsDragging = false; return; }
     float dx = m_TouchStartX - x;
     if (std::abs(dx) > 8.0f) m_IsDragging = true;
     if (m_IsDragging) {
@@ -167,10 +166,9 @@ void InputField::Draw(UIRenderer& ui) {
 
         // Auto-scroll to keep cursor (end of text) visible when focused
         float maxScroll = std::max(0.0f, textW - maxTextW);
-        if (m_TextChanged) {
+        if (textW != m_LastTextW)
             m_ScrollOffset = maxScroll;
-            m_TextChanged  = false;
-        }
+        m_LastTextW = textW;
         m_ScrollOffset = std::max(0.0f, std::min(m_ScrollOffset, maxScroll));
 
         float tx = m_X + pad - m_ScrollOffset;

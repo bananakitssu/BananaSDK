@@ -37,8 +37,6 @@ bool Textarea::OnTouch(float x, float y) {
 
 void Textarea::OnTouchMove(float x, float y) {
     if (!m_IsDown) return;
-    if (!HitTest(x, y)) { m_IsDown = false; m_IsDragging = false; return; }
-
     float dx = m_TouchStartX - x;
     float dy = m_TouchStartY - y;
     if (std::abs(dx) > 8.0f || std::abs(dy) > 8.0f) m_IsDragging = true;
@@ -189,11 +187,10 @@ void Textarea::Draw(UIRenderer& ui) {
         m_LastContentH  = contentH;
         float maxScroll = std::max(0.0f, contentH - m_H);
 
-        if (m_TextChanged) {
-            float lastLineBottom = pad + (float)lines.size() * lineH;
-            m_ScrollOffset = std::max(0.0f, lastLineBottom - m_H + pad);
-            m_TextChanged  = false;
-        }
+        float maxScroll = std::max(0.0f, contentH - m_H);
+        if (contentH != m_LastContentH)
+            m_ScrollOffset = maxScroll;
+        m_LastContentH = contentH;
         m_ScrollOffset = std::max(0.0f, std::min(m_ScrollOffset, maxScroll));
 
         float maxLineW = 0.0f;
