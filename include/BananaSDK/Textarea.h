@@ -52,7 +52,6 @@ private:
     float m_LastContentH = 0.0f;
     float m_TouchStartY  = 0.0f;
     float m_CursorBlink  = 0.0f;
-    bool  m_TextChanged   = false;
     float m_ScrollOffsetX = 0.0f;
     float m_TouchStartX   = 0.0f;
     float m_LastMaxScrollX = 0.0f;
