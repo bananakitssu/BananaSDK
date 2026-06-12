@@ -123,6 +123,10 @@ public:
     void OnTextChanged(const std::string& text);
     void OnSubmit(const std::string& text);
 
+    bool m_ImeFocused = false;
+    void SetImeFocused(bool f) { m_ImeFocused = f; }
+    bool IsImeFocused() const  { return m_ImeFocused; }
+
 private:
     _BananaInternal::ListenerMap m_Listeners;
     static void _HandleCmd(android_app* state, int32_t cmd);
