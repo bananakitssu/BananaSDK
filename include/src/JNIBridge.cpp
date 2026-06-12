@@ -6,11 +6,18 @@ AndroidApp* g_AppInstance = nullptr;
 
 extern "C"
 JNIEXPORT void JNICALL
-Java_com_bananasdk_app_MainActivity_nativeOnTextCommit(JNIEnv* env, jobject, jstring text) {
+Java_com_bananasdk_app_MainActivity_nativeOnTextChanged(JNIEnv* env, jobject, jstring text) {
     const char* chars = env->GetStringUTFChars(text, nullptr);
     std::string str(chars);
     env->ReleaseStringUTFChars(text, chars);
+    if (g_AppInstance) g_AppInstance->OnTextChanged(str);
+}
 
-    if (g_AppInstance)
-        g_AppInstance->OnTextCommit(str);
+extern "C"
+JNIEXPORT void JNICALL
+Java_com_bananasdk_app_MainActivity_nativeOnSubmit(JNIEnv* env, jobject, jstring text) {
+    const char* chars = env->GetStringUTFChars(text, nullptr);
+    std::string str(chars);
+    env->ReleaseStringUTFChars(text, chars);
+    if (g_AppInstance) g_AppInstance->OnSubmit(str);
 }

@@ -154,13 +154,24 @@ void AndroidApp::DispatchKey(int32_t keyCode, int32_t unicode) {
     }
 }
 
-void AndroidApp::OnTextCommit(const std::string& text) {
+void AndroidApp::OnTextChanged(const std::string& text) {
     for (auto& el : m_Elements) {
         std::visit([&text](auto& ptr) {
             using T = std::decay_t<decltype(*ptr)>;
             if constexpr (std::is_same_v<T, InputField> || std::is_same_v<T, Textarea>)
                 if (ptr->IsFocused())
-                    ptr->OnTextCommit(text);
+                    ptr->SetTextFromIME(text);
+        }, el);
+    }
+}
+
+void AndroidApp::OnSubmit(const std::string& text) {
+    for (auto& el : m_Elements) {
+        std::visit([&text](auto& ptr) {
+            using T = std::decay_t<decltype(*ptr)>;
+            if constexpr (std::is_same_v<T, InputField>)
+                if (ptr->IsFocused())
+                    ptr->TriggerSubmit(text);
         }, el);
     }
 }

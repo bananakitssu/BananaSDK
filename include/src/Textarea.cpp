@@ -65,39 +65,40 @@ void Textarea::_Focus() {
     m_Focused = true;
     if (!m_Activity) return;
     JNIEnv* env = nullptr;
-    m_Activity->vm->AttachCurrentThread(&env, nullptr);
-    jclass  actClass  = env->GetObjectClass(m_Activity->clazz);
-    jobject window    = env->CallObjectMethod(m_Activity->clazz, env->GetMethodID(actClass, "getWindow", "()Landroid/view/Window;"));
-    jobject decorView = env->CallObjectMethod(window, env->GetMethodID(env->GetObjectClass(window), "getDecorView", "()Landroid/view/View;"));
-    jstring svc       = env->NewStringUTF("input_method");
-    jobject imm       = env->CallObjectMethod(m_Activity->clazz, env->GetMethodID(actClass, "getSystemService", "(Ljava/lang/String;)Ljava/lang/Object;"), svc);
-    env->CallBooleanMethod(imm, env->GetMethodID(env->GetObjectClass(imm), "showSoftInput", "(Landroid/view/View;I)Z"), decorView, (jint)0);
-    env->DeleteLocalRef(svc); env->DeleteLocalRef(imm);
-    env->DeleteLocalRef(decorView); env->DeleteLocalRef(window); env->DeleteLocalRef(actClass);
-    m_Activity->vm->DetachCurrentThread();
+    bool attached = false;
+    if (m_Activity->vm->GetEnv((void**)&env, JNI_VERSION_1_6) == JNI_EDETACHED) {
+        m_Activity->vm->AttachCurrentThread(&env, nullptr);
+        attached = true;
+    }
+    jclass cls = env->GetObjectClass(m_Activity->clazz);
+    jmethodID mid = env->GetMethodID(cls, "showEditInput", "(Ljava/lang/String;Z)V");
+    jstring jtext = env->NewStringUTF(m_Text.c_str());
+    env->CallVoidMethod(m_Activity->clazz, mid, jtext, (jboolean)JNI_TRUE);
+    env->DeleteLocalRef(jtext);
+    env->DeleteLocalRef(cls);
+    if (attached) m_Activity->vm->DetachCurrentThread();
 }
 
 void Textarea::_Unfocus() {
     m_Focused = false;
     if (!m_Activity) return;
     JNIEnv* env = nullptr;
-    m_Activity->vm->AttachCurrentThread(&env, nullptr);
-    jclass  actClass  = env->GetObjectClass(m_Activity->clazz);
-    jobject window    = env->CallObjectMethod(m_Activity->clazz, env->GetMethodID(actClass, "getWindow", "()Landroid/view/Window;"));
-    jobject decorView = env->CallObjectMethod(window, env->GetMethodID(env->GetObjectClass(window), "getDecorView", "()Landroid/view/View;"));
-    jstring svc       = env->NewStringUTF("input_method");
-    jobject imm       = env->CallObjectMethod(m_Activity->clazz, env->GetMethodID(actClass, "getSystemService", "(Ljava/lang/String;)Ljava/lang/Object;"), svc);
-    jobject binder    = env->CallObjectMethod(decorView, env->GetMethodID(env->GetObjectClass(decorView), "getWindowToken", "()Landroid/os/IBinder;"));
-    env->CallBooleanMethod(imm, env->GetMethodID(env->GetObjectClass(imm), "hideSoftInputFromWindow", "(Landroid/os/IBinder;I)Z"), binder, (jint)0);
-    env->DeleteLocalRef(binder); env->DeleteLocalRef(svc); env->DeleteLocalRef(imm);
-    env->DeleteLocalRef(decorView); env->DeleteLocalRef(window); env->DeleteLocalRef(actClass);
-    m_Activity->vm->DetachCurrentThread();
+    bool attached = false;
+    if (m_Activity->vm->GetEnv((void**)&env, JNI_VERSION_1_6) == JNI_EDETACHED) {
+        m_Activity->vm->AttachCurrentThread(&env, nullptr);
+        attached = true;
+    }
+    jclass cls = env->GetObjectClass(m_Activity->clazz);
+    jmethodID mid = env->GetMethodID(cls, "hideEditInput", "()V");
+    env->CallVoidMethod(m_Activity->clazz, mid);
+    env->DeleteLocalRef(cls);
+    if (attached) m_Activity->vm->DetachCurrentThread();
 }
 
 bool Textarea::OnKey(int32_t keyCode, int32_t unicode) {
     if (!m_Focused) return false;
 
-    if (keyCode == AKEYCODE_DEL) {
+    /*if (keyCode == AKEYCODE_DEL) {
         if (!m_Text.empty()) {
             int i = (int)m_Text.size() - 1;
             while (i > 0 && (m_Text[i] & 0xC0) == 0x80) i--;
@@ -122,7 +123,7 @@ bool Textarea::OnKey(int32_t keyCode, int32_t unicode) {
         if (m_OnChange) m_OnChange(m_Text);
         m_LinesDirty = true;
         return true;
-    }
+    }*/
 
     return false;
 }
@@ -218,8 +219,10 @@ void Textarea::Draw(UIRenderer& ui) {
     ui.PopScissor();
 }
 
-void Textarea::OnTextCommit(const std::string& text) {
-    m_Text += text;
+void Textarea::SetTextFromIME(const std::string& text) {
+    m_Text = text;
     m_LinesDirty = true;
     if (m_OnChange) m_OnChange(m_Text);
 }
+
+void Textarea::TriggerSubmit(const std::string& text) {}
