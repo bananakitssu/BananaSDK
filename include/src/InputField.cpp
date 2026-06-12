@@ -167,8 +167,10 @@ void InputField::Draw(UIRenderer& ui) {
 
         // Auto-scroll to keep cursor (end of text) visible when focused
         float maxScroll = std::max(0.0f, textW - maxTextW);
-        if (m_Focused && textW - m_ScrollOffset > maxTextW)
-            m_ScrollOffset = textW - maxTextW;
+        if (m_TextChanged) {
+            m_ScrollOffset = maxScroll;
+            m_TextChanged  = false;
+        }
         m_ScrollOffset = std::max(0.0f, std::min(m_ScrollOffset, maxScroll));
 
         float tx = m_X + pad - m_ScrollOffset;

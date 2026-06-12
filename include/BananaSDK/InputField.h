@@ -53,6 +53,7 @@ private:
     bool  m_Focused     = false;
     bool  m_IsDown      = false;
     float m_CursorBlink = 0.0f;
+    bool m_TextChanged = false;
     std::chrono::steady_clock::time_point m_LastTime;
     ANativeActivity* m_Activity = nullptr;
     std::function<void(const std::string&)> m_OnChange;

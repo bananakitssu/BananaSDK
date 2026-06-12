@@ -28,6 +28,7 @@ bool Textarea::OnTouch(float x, float y) {
     if (HitTest(x, y)) {
         m_IsDown      = true;
         m_IsDragging  = false;
+        m_TouchStartX = x;
         m_TouchStartY = y;
         return true;
     }
@@ -37,13 +38,20 @@ bool Textarea::OnTouch(float x, float y) {
 void Textarea::OnTouchMove(float x, float y) {
     if (!m_IsDown) return;
     if (!HitTest(x, y)) { m_IsDown = false; m_IsDragging = false; return; }
+
+    float dx = m_TouchStartX - x;
     float dy = m_TouchStartY - y;
-    if (std::abs(dy) > 8.0f) m_IsDragging = true;
+    if (std::abs(dx) > 8.0f || std::abs(dy) > 8.0f) m_IsDragging = true;
+
     if (m_IsDragging) {
-        m_ScrollOffset += dy;
-        m_TouchStartY   = y;
+        m_ScrollOffset  += dy;
+        m_ScrollOffsetX += dx;
+        m_TouchStartX    = x;
+        m_TouchStartY    = y;
+
         float maxScroll = std::max(0.0f, m_LastContentH - m_H);
         m_ScrollOffset  = std::max(0.0f, std::min(m_ScrollOffset, maxScroll));
+        m_ScrollOffsetX = std::max(0.0f, std::min(m_ScrollOffsetX, m_LastMaxScrollX));
     }
 }
 
@@ -169,6 +177,8 @@ void Textarea::Draw(UIRenderer& ui) {
     if (m_Focused)
         ui.DrawRect(m_X-2, m_Y-2, m_W+4, m_H+4, 0.0f, 0.478f, 1.0f, 1.0f, r+2);
     ui.DrawRect(m_X, m_Y, m_W, m_H, m_BgR, m_BgG, m_BgB, 1.0f, r);
+    
+    ui.PushScissor(m_X, m_Y, m_W, m_H);
 
     if (m_Text.empty() && !m_Placeholder.empty()) {
         ui.DrawText(m_X + pad, m_Y + pad, m_Placeholder, 0.65f, 0.65f, 0.65f, 1.0f, m_FontSize);
@@ -179,27 +189,34 @@ void Textarea::Draw(UIRenderer& ui) {
         m_LastContentH  = contentH;
         float maxScroll = std::max(0.0f, contentH - m_H);
 
-        if (m_Focused && !m_Text.empty()) {
+        if (m_TextChanged) {
             float lastLineBottom = pad + (float)lines.size() * lineH;
-            if (lastLineBottom - m_ScrollOffset > m_H - pad)
-                m_ScrollOffset = lastLineBottom - m_H + pad;
+            m_ScrollOffset = std::max(0.0f, lastLineBottom - m_H + pad);
+            m_TextChanged  = false;
         }
-
         m_ScrollOffset = std::max(0.0f, std::min(m_ScrollOffset, maxScroll));
+
+        float maxLineW = 0.0f;
+        for (auto& line : lines)
+            maxLineW = std::max(maxLineW, ui.MeasureText(line, m_FontSize));
+        m_LastMaxScrollX = std::max(0.0f, maxLineW - (m_W - pad * 2.0f));
+        m_ScrollOffsetX  = std::max(0.0f, std::min(m_ScrollOffsetX, m_LastMaxScrollX));
 
         for (size_t i = 0; i < lines.size(); i++) {
             float ly = m_Y + pad + (float)i * lineH - m_ScrollOffset;
             if (ly + m_FontSize < m_Y) continue;
             if (ly > m_Y + m_H)       break;
-            ui.DrawText(m_X + pad, ly, lines[i], 0.1f, 0.1f, 0.1f, 1.0f, m_FontSize);
+            ui.DrawText(m_X + pad - m_ScrollOffsetX, ly, lines[i], 0.1f, 0.1f, 0.1f, 1.0f, m_FontSize);
         }
 
         if (m_Focused && m_CursorBlink < 0.5f && !lines.empty()) {
             size_t last = lines.size() - 1;
             float cy = m_Y + pad + (float)last * lineH - m_ScrollOffset;
-            float cx = m_X + pad + ui.MeasureText(lines[last], m_FontSize);
+            float cx = m_X + pad + ui.MeasureText(lines[last], m_FontSize) - m_ScrollOffsetX;
             if (cy >= m_Y && cy + m_FontSize <= m_Y + m_H)
                 ui.DrawRect(cx + 2, cy, 2.0f, m_FontSize, 0.0f, 0.478f, 1.0f, 1.0f);
         }
     }
+    
+    ui.PopScissor();
 }
