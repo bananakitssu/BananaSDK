@@ -96,20 +96,4 @@ public void hideEditInput() {
         getWindow().setStatusBarColor(0xFF000000);
         setupHiddenInput();
     }
-
-    public native void nativeOnTextCommit(String text);
-
-    @Override
-    public InputConnection onCreateInputConnection(EditorInfo outAttrs) {
-        outAttrs.inputType  = InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_MULTI_LINE;
-        outAttrs.imeOptions = EditorInfo.IME_FLAG_NO_EXTRACT_UI;
-
-        return new BaseInputConnection(getWindow().getDecorView(), false) {
-            @Override
-            public boolean commitText(CharSequence text, int newCursorPosition) {
-                nativeOnTextCommit(text.toString());
-                return true;
-            }
-        };
-    }
 }
