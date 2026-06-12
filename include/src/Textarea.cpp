@@ -185,7 +185,6 @@ void Textarea::Draw(UIRenderer& ui) {
 
         float contentH  = (float)lines.size() * lineH + pad * 2.0f;
         m_LastContentH  = contentH;
-        float maxScroll = std::max(0.0f, contentH - m_H);
 
         float maxScroll = std::max(0.0f, contentH - m_H);
         if (contentH != m_LastContentH)
