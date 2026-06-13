@@ -35,74 +35,85 @@ void Progress::Draw(UIRenderer& ui) {
     float leftEdge  = m_X + m_Padding;
     float rightEdge = m_X + m_W - m_Padding;
     float usableW   = std::max(0.0f, rightEdge - leftEdge);
-    float h         = m_H;
-    float fillRad   = h * 0.5f;
+    float h         = std::max(0.0f, m_H - m_Padding * 2.0f);  // full padded height (circle/pill height)
 
     if (m_Progress < 0.0f) {
-        // Indeterminate: grow -> slide -> shrink-to-circle -> shrink-to-zero -> loop
+        // 5-phase indeterminate loop:
+        // grow (point->circle) -> widen (circle->limit) -> slide -> shrink width (limit->circle) -> shrink to nothing
         m_IndetPhase += dt / m_CycleTime;
         while (m_IndetPhase > 1.0f) m_IndetPhase -= 1.0f;
         float ph = m_IndetPhase;
 
         float growLimit = usableW * m_GrowLimitF;
 
-        float f1 = 0.30f; // grow
-        float f2 = 0.35f; // slide
-        float f3 = 0.20f; // shrink to circle
-        float f4 = 0.15f; // shrink to zero
-        float t1 = f1;
-        float t2 = t1 + f2;
-        float t3 = t2 + f3;
+        float f1 = 0.15f; // grow to circle
+        float f2 = 0.15f; // widen to limit
+        float f3 = 0.30f; // slide
+        float f4 = 0.15f; // shrink width back to circle
+        float f5 = 0.25f; // shrink to nothing
+        float t1 = f1, t2 = t1+f2, t3 = t2+f3, t4 = t3+f4;
 
-        float fillW, fillX;
+        float fillW, fillH, fillX;
 
         if (ph < t1) {
-            float t = ph / f1;
-            fillW = growLimit * smoothstep01(t);
+            float t = smoothstep01(ph / f1);
+            fillW = h * t;
+            fillH = fillW;
             fillX = leftEdge;
         } else if (ph < t2) {
-            float t = (ph - t1) / f2;
-            fillW = growLimit;
-            fillX = leftEdge + (rightEdge - growLimit - leftEdge) * smoothstep01(t);
+            float t = smoothstep01((ph - t1) / f2);
+            fillH = h;
+            fillW = h + (growLimit - h) * t;
+            fillX = leftEdge;
         } else if (ph < t3) {
-            float t = (ph - t2) / f3;
-            fillW = growLimit + (h - growLimit) * smoothstep01(t);
+            float t = smoothstep01((ph - t2) / f3);
+            fillH = h;
+            fillW = growLimit;
+            fillX = leftEdge + (rightEdge - growLimit - leftEdge) * t;
+        } else if (ph < t4) {
+            float t = smoothstep01((ph - t3) / f4);
+            fillH = h;
+            fillW = growLimit + (h - growLimit) * t;
             fillX = rightEdge - fillW;
         } else {
-            float t = (ph - t3) / f4;
-            fillW = h * (1.0f - smoothstep01(t));
+            float t = smoothstep01((ph - t4) / f5);
+            fillH = h * (1.0f - t);
+            fillW = fillH;
             fillX = rightEdge - fillW;
         }
 
-        if (fillW > 0.01f)
-            ui.DrawRect(fillX, m_Y, fillW, h, m_FillR, m_FillG, m_FillB, m_FillA, fillRad);
+        float fillY    = m_Y + (m_H - fillH) * 0.5f;
+        float fillRad  = std::min(fillW, fillH) * 0.5f;
+
+        if (fillW > 0.01f && fillH > 0.01f)
+            ui.DrawRect(fillX, fillY, fillW, fillH, m_FillR, m_FillG, m_FillB, m_FillA, fillRad);
         return;
     }
 
-    // Determinate: dot -> pill -> bar
+    // Determinate: dot -> circle -> pill -> bar
     float target = std::clamp(m_Progress, 0.0f, 1.0f);
     m_Display += (target - m_Display) * std::min(1.0f, dt * m_Speed);
     if (std::abs(target - m_Display) < 0.001f) m_Display = target;
 
     float p = m_Display;
-    float fillW, fillH, fillRad2, fillX, fillY;
+    float fillW, fillH, fillX, fillY, fillRad;
 
     if (p <= m_MorphPoint) {
         float t = p / m_MorphPoint;
-        fillW    = h * t;
-        fillH    = fillW;
-        fillRad2 = fillW * 0.5f;
-        fillX    = leftEdge;
-        fillY    = m_Y + (h - fillH) * 0.5f;
+        fillH = h * t;
+        fillW = fillH;
+        fillX = leftEdge;
+        fillY = m_Y + (m_H - fillH) * 0.5f;
+        fillRad = fillH * 0.5f;
     } else {
         float t = (p - m_MorphPoint) / (1.0f - m_MorphPoint);
-        fillW    = h + (usableW - h) * t;
-        fillH    = h;
-        fillRad2 = h * 0.5f;
-        fillX    = leftEdge;
-        fillY    = m_Y;
+        fillH = h;
+        fillW = h + (usableW - h) * t;
+        fillX = leftEdge;
+        fillY = m_Y + m_Padding;
+        fillRad = h * 0.5f;
     }
 
-    if (fillW > 0.01f)
-        ui.DrawRect(fillX, fillY, fillW, fillH, m_FillR, m_FillG, m_FillB, m_FillA, fillRad2);
+    if (fillW > 0.01f && fillH > 0.01f)
+        ui.DrawRect(fillX, fillY, fillW, fillH, m_FillR, m_FillG, m_FillB, m_FillA, fillRad);
 }
