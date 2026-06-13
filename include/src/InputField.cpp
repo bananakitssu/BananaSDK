@@ -136,7 +136,7 @@ void InputField::Draw(UIRenderer& ui) {
     // Vertically center accounting for full font metrics height
     float ty = m_Y + (m_H - m_FontSize * 1.2f) * 0.5f;
 
-    ui.PushScissor(m_X + pad, m_Y, maxTextW, m_H);
+    ui.PushRoundedScissor(m_X, m_Y, m_W, m_H, r);
 
     if (m_Text.empty() && !m_Placeholder.empty()) {
         ui.DrawText(m_X + pad, ty, m_Placeholder, 0.65f, 0.65f, 0.65f, 1.0f, m_FontSize);
@@ -162,7 +162,7 @@ void InputField::Draw(UIRenderer& ui) {
         }
     }
 
-    ui.PopScissor();
+    ui.PopRoundedScissor();
 }
 
 void InputField::SetTextFromIME(const std::string& text) {
