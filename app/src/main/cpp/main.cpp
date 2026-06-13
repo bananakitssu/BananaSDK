@@ -44,6 +44,14 @@ public:
             );
             myTextarea->SetActivity(getActivity());
             myTextarea->SetPlaceholder("Type here...");
+            auto myProgress = std::make_shared<Progress>(
+                myInput->GetX(),
+                myInput->GetY() + myInput->GetH() + 12.0f,
+                myInput->GetW(),
+                24.0f
+            );
+            myProgress->SetProgress(-1.0f);
+            addElement(myProgress);
             addElement(myTextarea);
             addElement(myInput);
             addElement(myButton);

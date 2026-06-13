@@ -18,6 +18,7 @@ add_library(bananasdk SHARED
     include/src/InputField.cpp
     include/src/Textarea.cpp
     include/src/JNIBridge.cpp
+    include/src/Progress.cpp
     app/src/main/cpp/main.cpp
 )
 
