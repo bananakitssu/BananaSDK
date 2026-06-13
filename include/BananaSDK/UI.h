@@ -33,6 +33,8 @@ public:
 
     void PushScissor(float x, float y, float w, float h);
     void PopScissor();
+    void PushRoundedScissor(float x, float y, float w, float h, float radius);
+    void PopRoundedScissor();
 
 private:
     GLuint CompileShader(GLenum type, const char* src);
@@ -43,6 +45,7 @@ private:
                                  float r, float g, float b, float a);
 
     ANativeActivity* m_Activity = nullptr;
+    unsigned int m_StencilProg = 0;
     GLuint m_RectProg = 0;
     GLuint m_TexProg  = 0;
     int    m_Width    = 0;

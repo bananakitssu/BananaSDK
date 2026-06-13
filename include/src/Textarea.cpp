@@ -182,7 +182,7 @@ void Textarea::Draw(UIRenderer& ui) {
         ui.DrawRect(m_X-2, m_Y-2, m_W+4, m_H+4, 0.0f, 0.478f, 1.0f, 1.0f, r+2);
     ui.DrawRect(m_X, m_Y, m_W, m_H, m_BgR, m_BgG, m_BgB, 1.0f, r);
     
-    ui.PushScissor(m_X, m_Y, m_W, m_H);
+    ui.PushRoundedScissor(m_X, m_Y, m_W, m_H, r);
 
     if (m_Text.empty() && !m_Placeholder.empty()) {
         ui.DrawText(m_X + pad, m_Y + pad, m_Placeholder, 0.65f, 0.65f, 0.65f, 1.0f, m_FontSize);
@@ -221,7 +221,7 @@ void Textarea::Draw(UIRenderer& ui) {
         }
     }
     
-    ui.PopScissor();
+    ui.PopRoundedScissor();
 }
 
 void Textarea::SetTextFromIME(const std::string& text) {

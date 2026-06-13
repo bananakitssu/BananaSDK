@@ -44,6 +44,27 @@ void main() {
 }
 )glsl";
 
+static const char* RECT_FRAG_STENCIL = R"glsl(
+precision mediump float;
+uniform vec2  u_tl;
+uniform vec2  u_size;
+uniform float u_radius;
+uniform float u_sh;
+
+float sdfRoundRect(vec2 p, vec2 halfSize, float r) {
+    vec2 q = abs(p) - halfSize + r;
+    return length(max(q, 0.0)) - r;
+}
+
+void main() {
+    vec2  fc     = vec2(gl_FragCoord.x, u_sh - gl_FragCoord.y);
+    vec2  center = u_tl + u_size * 0.5;
+    float d      = sdfRoundRect(fc - center, u_size * 0.5, u_radius);
+    if (d > 0.0) discard;
+    gl_FragColor = vec4(1.0);
+}
+)glsl";
+
 static const char* TEX_VERT = R"glsl(
 attribute vec2 a_pos;
 attribute vec2 a_uv;
@@ -112,6 +133,11 @@ bool UIRenderer::Init(ANativeActivity* activity, std::variant<AndroidApp*, Andro
     m_Width    = w;
     m_Height   = h;
     m_RectProg = CreateProgram(RECT_VERT, RECT_FRAG);
+    m_StencilProg = CreateProgram(RECT_VERT, RECT_FRAG_STENCIL);
+    if (!m_StencilProg) {
+        _BANANA_LOGE("UIRenderer: stencil shader init failed");
+        return false;
+    }
     m_TexProg  = CreateProgram(TEX_VERT,  TEX_FRAG);
     if (!m_RectProg || !m_TexProg) {
         _BANANA_LOGE("UIRenderer: shader init failed");
@@ -157,6 +183,7 @@ bool UIRenderer::Init(ANativeActivity* activity, std::variant<AndroidApp*, Andro
 
 void UIRenderer::Destroy() {
     if (m_RectProg) { glDeleteProgram(m_RectProg); m_RectProg = 0; }
+    if (m_StencilProg) { glDeleteProgram(m_StencilProg); m_StencilProg = 0; }
     if (m_TexProg)  { glDeleteProgram(m_TexProg);  m_TexProg  = 0; }
     m_Ready = false;
 }
@@ -366,4 +393,35 @@ void UIRenderer::PushScissor(float x, float y, float w, float h) {
 
 void UIRenderer::PopScissor() {
     glDisable(GL_SCISSOR_TEST);
+}
+
+void UIRenderer::PushRoundedScissor(float x, float y, float w, float h, float radius) {
+    glEnable(GL_STENCIL_TEST);
+    glClearStencil(0);
+    glClear(GL_STENCIL_BUFFER_BIT);
+
+    glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
+    glStencilFunc(GL_ALWAYS, 1, 0xFF);
+    glStencilOp(GL_REPLACE, GL_REPLACE, GL_REPLACE);
+
+    float verts[] = { x, y,  x+w, y,  x, y+h,  x+w, y+h };
+    glUseProgram(m_StencilProg);
+    glUniform2f(glGetUniformLocation(m_StencilProg, "u_res"),    (float)m_Width, (float)m_Height);
+    glUniform2f(glGetUniformLocation(m_StencilProg, "u_tl"),     x, y);
+    glUniform2f(glGetUniformLocation(m_StencilProg, "u_size"),   w, h);
+    glUniform1f(glGetUniformLocation(m_StencilProg, "u_radius"), radius);
+    glUniform1f(glGetUniformLocation(m_StencilProg, "u_sh"),     (float)m_Height);
+    GLint pos = glGetAttribLocation(m_StencilProg, "a_pos");
+    glVertexAttribPointer(pos, 2, GL_FLOAT, GL_FALSE, 0, verts);
+    glEnableVertexAttribArray(pos);
+    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+    glDisableVertexAttribArray(pos);
+
+    glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
+    glStencilFunc(GL_EQUAL, 1, 0xFF);
+    glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
+}
+
+void UIRenderer::PopRoundedScissor() {
+    glDisable(GL_STENCIL_TEST);
 }
