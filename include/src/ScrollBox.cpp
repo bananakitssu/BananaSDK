@@ -60,14 +60,14 @@ bool ScrollBox::OnTouch(float x, float y) {
     m_ScrollStart   = m_ScrollOffset;
 
     if (!onThumb) {
-        // Pass touch through to children (adjusted for scroll offset)
-        float localY = y + m_ScrollOffset;
+        float localX = x - m_X;
+        float localY = y - m_Y + m_ScrollOffset;
         for (int i = (int)m_Elements.size() - 1; i >= 0; i--) {
-            bool hit = std::visit([x, localY](auto& ptr) -> bool {
-                return ptr->HitTest(x, localY);
+            bool hit = std::visit([localX, localY](auto& ptr) -> bool {
+                return ptr->HitTest(localX, localY);
             }, m_Elements[i]);
             if (hit) {
-                std::visit([x, localY](auto& ptr) { ptr->OnTouch(x, localY); }, m_Elements[i]);
+                std::visit([localX, localY](auto& ptr) { ptr->OnTouch(localX, localY); }, m_Elements[i]);
                 break;
             }
         }
@@ -84,7 +84,7 @@ void ScrollBox::OnTouchMove(float x, float y) {
         float maxScroll = _MaxScroll();
         float trackH = m_H - std::max(20.0f, m_H * (m_H / std::max(m_ContentH, m_H)));
         if (trackH > 0.0f) {
-            float scrollDelta = (dy * -1.0f) * (maxScroll / trackH); // drag down -> scroll down
+            float scrollDelta = (dy * -1.0f) * (maxScroll / trackH);
             m_ScrollOffset = std::clamp(m_ScrollStart - scrollDelta, 0.0f, maxScroll);
         }
         return;
@@ -96,10 +96,10 @@ void ScrollBox::OnTouchMove(float x, float y) {
         float maxScroll = _MaxScroll();
         m_ScrollOffset = std::clamp(m_ScrollStart + dy, 0.0f, maxScroll);
     } else {
-        // Forward move to children
-        float localY = y + m_ScrollOffset;
+        float localX = x - m_X;
+        float localY = y - m_Y + m_ScrollOffset;
         for (auto& el : m_Elements)
-            std::visit([x, localY](auto& ptr) { ptr->OnTouchMove(x, localY); }, el);
+            std::visit([localX, localY](auto& ptr) { ptr->OnTouchMove(localX, localY); }, el);
     }
 }
 
@@ -107,9 +107,10 @@ void ScrollBox::OnRelease(float x, float y) {
     if (!m_IsDown) return;
 
     if (!m_DraggingThumb && !m_IsDragging) {
-        float localY = y + m_ScrollOffset;
+        float localX = x - m_X;
+        float localY = y - m_Y + m_ScrollOffset;
         for (auto& el : m_Elements)
-            std::visit([x, localY](auto& ptr) { ptr->OnRelease(x, localY); }, el);
+            std::visit([localX, localY](auto& ptr) { ptr->OnRelease(localX, localY); }, el);
     }
 
     m_IsDown        = false;
@@ -125,12 +126,12 @@ void ScrollBox::Draw(UIRenderer& ui) {
     // Draw children offset by scroll
     for (auto& el : m_Elements) {
         std::visit([&ui, this](auto& ptr) {
-            // Temporarily shift position for drawing
             float ox = ptr->GetX();
-            float oy = ptr->GetY();
-            ptr->SetPosition(ox + m_Padding, oy - m_ScrollOffset + m_Padding);
+            float oy = ptr->GetY();  // this is the LOCAL/relative position (0-based)
+
+            ptr->SetPosition(m_X + ox + m_Padding, m_Y + oy - m_ScrollOffset + m_Padding);
             ptr->Draw(ui);
-            ptr->SetPosition(ox, oy); // restore logical position
+            ptr->SetPosition(ox, oy); // restore to local coords
         }, el);
     }
 
