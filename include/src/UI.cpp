@@ -77,6 +77,38 @@ void main() {
 }
 )glsl";*/
 
+static const char* CHECK_FRAG = R"glsl(
+precision mediump float;
+uniform vec2  u_pos;
+uniform float u_size;
+uniform float u_stroke;
+uniform vec4  u_color;
+uniform float u_sh;
+
+float segDist(vec2 p, vec2 a, vec2 b) {
+    vec2 pa = p - a, ba = b - a;
+    float h = clamp(dot(pa, ba) / dot(ba, ba), 0.0, 1.0);
+    return length(pa - ba * h);
+}
+
+void main() {
+    vec2 fc = vec2(gl_FragCoord.x, u_sh - gl_FragCoord.y);
+    vec2 p  = (fc - u_pos) / u_size; // normalize to 0..1 box
+
+    // Checkmark polyline points (y-down space)
+    vec2 a = vec2(0.20, 0.52);
+    vec2 b = vec2(0.42, 0.75);
+    vec2 c = vec2(0.82, 0.25);
+
+    float d1 = segDist(p, a, b);
+    float d2 = segDist(p, b, c);
+    float d  = min(d1, d2) * u_size; // back to pixel space
+
+    float alpha = 1.0 - smoothstep(u_stroke * 0.5 - 1.0, u_stroke * 0.5 + 1.0, d);
+    gl_FragColor = vec4(u_color.rgb, u_color.a * alpha);
+}
+)glsl";
+
 static const char* RING_FRAG = R"glsl(
 precision mediump float;
 uniform vec2  u_center;
@@ -220,6 +252,11 @@ bool UIRenderer::Init(ANativeActivity* activity, std::variant<AndroidApp*, Andro
         _BANANA_LOGE("UIRenderer: ring shader init failed");
         return false;
     }
+    m_CheckProg = CreateProgram(RECT_VERT, CHECK_FRAG);
+    if (!m_CheckProg) {
+        _BANANA_LOGE("UIRenderer: check shader init failed");
+        return false;
+    }
     m_StencilProg = CreateProgram(RECT_VERT, RECT_FRAG_STENCIL);
     if (!m_StencilProg) {
         _BANANA_LOGE("UIRenderer: stencil shader init failed");
@@ -277,6 +314,7 @@ bool UIRenderer::Init(ANativeActivity* activity, std::variant<AndroidApp*, Andro
 void UIRenderer::Destroy() {
     if (m_RectProg) { glDeleteProgram(m_RectProg); m_RectProg = 0; }
     if (m_RingProg) { glDeleteProgram(m_RingProg); m_RingProg = 0; }
+    if (m_CheckProg) { glDeleteProgram(m_CheckProg); m_CheckProg = 0; }
     if (m_StencilProg) { glDeleteProgram(m_StencilProg); m_StencilProg = 0; }
     if (m_TexProg)  { glDeleteProgram(m_TexProg);  m_TexProg  = 0; }
     m_Ready = false;
@@ -333,6 +371,27 @@ void UIRenderer::DrawRing(float cx, float cy, float radius, float stroke,
     glDisableVertexAttribArray(pos);
 }
 
+// ── DrawCheck ─────────────
+void UIRenderer::DrawCheck(float x, float y, float size, float stroke,
+                            float r, float g, float b, float a) {
+    if (!m_Ready) return;
+
+    float verts[] = { x, y,  x+size, y,  x, y+size,  x+size, y+size };
+
+    glUseProgram(m_CheckProg);
+    glUniform2f(glGetUniformLocation(m_CheckProg, "u_res"),    (float)m_Width, (float)m_Height);
+    glUniform2f(glGetUniformLocation(m_CheckProg, "u_pos"),    x, y);
+    glUniform1f(glGetUniformLocation(m_CheckProg, "u_size"),   size);
+    glUniform1f(glGetUniformLocation(m_CheckProg, "u_stroke"), stroke);
+    glUniform4f(glGetUniformLocation(m_CheckProg, "u_color"),  r, g, b, a);
+    glUniform1f(glGetUniformLocation(m_CheckProg, "u_sh"),     (float)m_Height);
+
+    GLint pos = glGetAttribLocation(m_CheckProg, "a_pos");
+    glVertexAttribPointer(pos, 2, GL_FLOAT, GL_FALSE, 0, verts);
+    glEnableVertexAttribArray(pos);
+    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+    glDisableVertexAttribArray(pos);
+}
 
 // ── Text (JNI Canvas → GL Texture) ───────────────────────────────────────────
 

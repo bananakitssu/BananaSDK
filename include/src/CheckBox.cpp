@@ -41,13 +41,12 @@ void CheckBox::Draw(UIRenderer& ui) {
     ui.DrawRect(m_X, m_Y, m_W, m_H, m_BoxR, m_BoxG, m_BoxB, m_BoxA, r);
 
     if (m_Checked) {
-        // Filled accent square, inset slightly
-        float inset = m_W * 0.18f;
-        float ix = m_X + inset;
-        float iy = m_Y + inset;
-        float iw = m_W - inset * 2.0f;
-        float ih = m_H - inset * 2.0f;
-        float ir = std::max(0.0f, r - inset);
-        ui.DrawRect(ix, iy, iw, ih, m_FillR, m_FillG, m_FillB, m_FillA, ir);
+        // Filled accent square
+        float inset = m_W * 0.0f; // fill full box, checkmark drawn on top
+        ui.DrawRect(m_X, m_Y, m_W, m_H, m_FillR, m_FillG, m_FillB, m_FillA, r);
+
+        // White checkmark on top
+        float stroke = m_W * 0.12f;
+        ui.DrawCheck(m_X, m_Y, m_W, stroke, 1.0f, 1.0f, 1.0f, 1.0f);
     }
 }
