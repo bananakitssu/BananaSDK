@@ -23,6 +23,7 @@ add_library(bananasdk SHARED
     include/src/ScrollBox.cpp
     include/src/RadioGroup.cpp
     include/src/CheckBox.cpp
+    include/src/Dropdown.cpp
     app/src/main/cpp/main.cpp
 )
 

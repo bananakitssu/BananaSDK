@@ -88,6 +88,18 @@ public:
             myRadioGroup->SetSelected(0);
             addRadioGroup(myRadioGroup);
             addScrollBox(myScrollBox);
+            auto myDropdown = std::make_shared<Dropdown>(
+                myRadioGroup->GetX() + myRadioGroup->GetW() + 12.0f,
+                myRadioGroup->GetY(),
+                180.0f, 48.0f
+            );
+            myDropdown->AddOption("Red");
+            myDropdown->AddOption("Green");
+            myDropdown->AddOption("Blue");
+            myDropdown->AddOption("Yellow");
+            myDropdown->AddOption("Purple");
+            myDropdown->SetSelected(0);
+            addElement(myDropdown);
             addElement(myProgress);
             addElement(myTextarea);
             addElement(myInput);
