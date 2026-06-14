@@ -29,61 +29,52 @@ void CircleProgress::Draw(UIRenderer& ui) {
     m_FirstFrame = false;
 
     const float TWO_PI = 6.28318530718f;
-    const float TOP    = 0.0f;
 
     float cx = m_X + m_W * 0.5f;
     float cy = m_Y + m_H * 0.5f;
-    float fullRadius = std::max(0.0f, std::min(m_W, m_H) * 0.5f - m_Stroke * 0.5f);
+    float radius = std::max(0.0f, std::min(m_W, m_H) * 0.5f - m_Stroke * 0.5f);
 
-    // Morph: dot -> full ring (radius grows from 0)
+    // Track ring is always visible
+    ui.DrawRing(cx, cy, radius, m_Stroke, 0.0f, TWO_PI, m_TrackR, m_TrackG, m_TrackB, m_TrackA);
+
+    // Morph: dot -> full ring by growing the sweep angle at fixed radius
     if (m_MorphElapsed < m_MorphTime) {
         m_MorphElapsed += dt;
         float t = smoothstep01(m_MorphElapsed / m_MorphTime);
-        float radius = fullRadius * t;
-
-        ui.DrawRing(cx, cy, radius, m_Stroke, 0.0f, TWO_PI, m_TrackR, m_TrackG, m_TrackB, m_TrackA);
-        ui.DrawRing(cx, cy, radius, m_Stroke, 0.0f, TWO_PI, m_FillR,  m_FillG,  m_FillB,  m_FillA);
+        float sweep = t * (TWO_PI - 0.01f); // stay just under full to keep caps visible until the end
+        ui.DrawRing(cx, cy, radius, m_Stroke, 0.0f, sweep, m_FillR, m_FillG, m_FillB, m_FillA);
         return;
     }
 
-    // Track
-    ui.DrawRing(cx, cy, fullRadius, m_Stroke, 0.0f, TWO_PI, m_TrackR, m_TrackG, m_TrackB, m_TrackA);
-
     if (m_Progress < 0.0f) {
-        // Material-style indeterminate spinner
-        m_RotOffset += dt * 2.0f;
+        // Continuous (non-branching) indeterminate spinner — no jumps
+        m_RotOffset += dt * (TWO_PI / m_CycleTime) * 0.5f;
         while (m_RotOffset > TWO_PI) m_RotOffset -= TWO_PI;
 
-        m_ArcPhase += dt / m_CycleTime;
-        while (m_ArcPhase > 1.0f) m_ArcPhase -= 1.0f;
+        m_ArcPhase += dt;
+        float phase = m_ArcPhase / m_CycleTime;
 
         float minSweep = 0.35f;
-        float maxSweep = 5.0f;
-        float sweep, startAngle;
+        float maxSweep = TWO_PI * 0.75f;
 
-        if (m_ArcPhase < 0.5f) {
-            float t = smoothstep01(m_ArcPhase / 0.5f);
-            sweep      = minSweep + (maxSweep - minSweep) * t;
-            startAngle = m_RotOffset;
-        } else {
-            float t = smoothstep01((m_ArcPhase - 0.5f) / 0.5f);
-            sweep      = maxSweep - (maxSweep - minSweep) * t;
-            startAngle = m_RotOffset + (maxSweep - minSweep) * t;
-        }
+        // Smooth periodic sweep, continuous derivative, no resets
+        float sweep = minSweep + (maxSweep - minSweep) * 0.5f * (1.0f - std::cos(TWO_PI * phase));
 
+        float startAngle = m_RotOffset;
         startAngle = std::fmod(startAngle, TWO_PI);
         if (startAngle < 0.0f) startAngle += TWO_PI;
 
-        ui.DrawRing(cx, cy, fullRadius, m_Stroke, startAngle, sweep, m_FillR, m_FillG, m_FillB, m_FillA);
+        ui.DrawRing(cx, cy, radius, m_Stroke, startAngle, sweep, m_FillR, m_FillG, m_FillB, m_FillA);
         return;
     }
 
-    // Determinate: fill clockwise from top
+    // Determinate: fill clockwise from top, rounded caps
     float target = std::clamp(m_Progress, 0.0f, 1.0f);
     m_Display += (target - m_Display) * std::min(1.0f, dt * m_Speed);
     if (std::abs(target - m_Display) < 0.001f) m_Display = target;
 
     float sweep = m_Display * TWO_PI;
     if (sweep > 0.001f)
-        ui.DrawRing(cx, cy, fullRadius, m_Stroke, TOP, sweep, m_FillR, m_FillG, m_FillB, m_FillA);
+        ui.DrawRing(cx, cy, radius, m_Stroke, 0.0f, std::min(sweep, TWO_PI - 0.01f),
+                     m_FillR, m_FillG, m_FillB, m_FillA);
 }
