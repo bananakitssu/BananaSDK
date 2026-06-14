@@ -12,6 +12,7 @@ public:
     void SetPosition(float x, float y);
     void SetSize(float w, float h);
     void SetRadius(float radius);
+    void SetPadding(float padding);
     void SetBgColor(float r, float g, float b, float a = 1.0f);
     void SetScrollbarColor(float r, float g, float b, float a = 1.0f);
     void SetContentHeight(float h);  // total scrollable content height
@@ -45,6 +46,8 @@ private:
     bool  m_DraggingThumb = false;
     float m_TouchStartY = 0.0f;
     float m_ScrollStart = 0.0f;
+
+    float m_Padding = 12.0f;
 
     std::vector<UIEl::UIElement> m_Elements;
 
