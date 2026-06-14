@@ -19,7 +19,7 @@ void ScrollBox::AddElement(UIEl::UIElement el) {
 }
 
 float ScrollBox::_MaxScroll() const {
-    return std::max(0.0f, m_ContentH - m_H);
+    return std::max(0.0f, (m_ContentH + m_Padding) - m_H);
 }
 
 const float SCROLLBAR_WIDTH = 8.0f;
