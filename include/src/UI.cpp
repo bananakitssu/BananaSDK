@@ -448,13 +448,13 @@ UIRenderer::TextTexture UIRenderer::MakeTextTexture(
 float UIRenderer::MeasureText(const std::string& text, float fontSize) {
     if (!m_Activity || text.empty()) return 0.0f;
 
-    JNIEnv* env = nullptr;
-    bool attached = false;
-    jint res = m_Activity->vm->GetEnv((void**)&env, JNI_VERSION_1_6);
-    if (res == JNI_EDETACHED) {
-        m_Activity->vm->AttachCurrentThread(&env, nullptr);
-        attached = true;
-    } else if (res != JNI_OK) return 0.0f;
+    static thread_local JNIEnv* env = nullptr;
+    if (!env) {
+        if (m_Activity->vm->GetEnv((void**)&env, JNI_VERSION_1_6) == JNI_EDETACHED) {
+            m_Activity->vm->AttachCurrentThread(&env, nullptr);
+        }
+    }
+    if (!env) return 0.0f;
 
     jclass clsPaint = env->FindClass("android/graphics/Paint");
     jobject paint   = env->NewObject(clsPaint, env->GetMethodID(clsPaint, "<init>", "()V"));
@@ -467,7 +467,6 @@ float UIRenderer::MeasureText(const std::string& text, float fontSize) {
     env->DeleteLocalRef(jtext);
     env->DeleteLocalRef(paint);
     env->DeleteLocalRef(clsPaint);
-    if (attached) m_Activity->vm->DetachCurrentThread();
 
     return width;
 }
