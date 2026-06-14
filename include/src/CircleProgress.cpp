@@ -41,8 +41,8 @@ void CircleProgress::Draw(UIRenderer& ui) {
     const float maxSweep = TWO_PI * 0.75f;
 
     if (m_Progress < 0.0f) {
-        // Morph-in: grow from a dot (sweep ~0) to the oscillation's starting sweep,
-        // at the same start angle the oscillation begins at (0 = top), so it's continuous.
+        // Morph-in: grow from a dot to the oscillation's starting sweep (minSweep),
+        // at startAngle=0, matching the oscillation's phase=0 state exactly.
         if (m_MorphElapsed < m_MorphTime) {
             m_MorphElapsed += dt;
             float t = smoothstep01(m_MorphElapsed / m_MorphTime);
@@ -52,25 +52,29 @@ void CircleProgress::Draw(UIRenderer& ui) {
             return;
         }
 
-        // Continuous Material-style oscillation, phase=0 matches morph's end state
-        // (startAngle=0, sweep=minSweep), so no jump on transition.
-        m_RotOffset += dt * (TWO_PI / m_CycleTime) * 0.5f;
+        // Base rotation, continuously advancing (kept bounded for precision)
+        m_RotOffset += dt * (TWO_PI / m_CycleTime);
         m_RotOffset = std::fmod(m_RotOffset, TWO_PI);
         if (m_RotOffset < 0.0f) m_RotOffset += TWO_PI;
 
-        m_ArcPhase += dt;
+        // Cycle phase, kept bounded
+        m_ArcPhase = std::fmod(m_ArcPhase + dt, m_CycleTime);
         float phase = m_ArcPhase / m_CycleTime;
 
-        // At phase=0: cos(0)=1 -> sweep = minSweep (matches morph end)
-        float sweep = minSweep + (maxSweep - minSweep) * 0.5f * (1.0f - std::cos(TWO_PI * phase));
+        // sweepVariablePart: 0 -> (maxSweep-minSweep) -> 0 over the cycle
+        float C = (maxSweep - minSweep) * 0.5f;
+        float sweepVar = C * (1.0f - std::cos(TWO_PI * phase));
 
-        ui.DrawRing(cx, cy, radius, m_Stroke, m_RotOffset, sweep, m_FillR, m_FillG, m_FillB, m_FillA);
+        // First half (phase < 0.5): sweepVar increasing -> head speeds up, tail slows -> arc grows
+        // Second half (phase > 0.5): sweepVar decreasing -> tail speeds up to catch head -> arc shrinks
+        float tailAngle = m_RotOffset - sweepVar * 0.5f;
+        float sweep     = sweepVar + minSweep;
+
+        ui.DrawRing(cx, cy, radius, m_Stroke, tailAngle, sweep, m_FillR, m_FillG, m_FillB, m_FillA);
         return;
     }
 
     // Determinate: fill clockwise from top, rounded caps.
-    // A tiny sweep with round caps already reads as a small dot/circle,
-    // so it naturally morphs dot -> arc -> full ring as m_Display grows.
     float target = std::clamp(m_Progress, 0.0f, 1.0f);
     m_Display += (target - m_Display) * std::min(1.0f, dt * m_Speed);
     if (std::abs(target - m_Display) < 0.001f) m_Display = target;
