@@ -14,6 +14,10 @@ public:
     void SetPosition(float x, float y);
     void SetSize(float w, float h);
     void Draw(UIRenderer& ui);
+    float GetX() const { return m_X; }
+    float GetY() const { return m_Y; }
+    float GetW() const { return m_W; }
+    float GetH() const { return m_H; }
 private:
     float m_X=0, m_Y=0, m_W=0, m_H=0;
     float m_R=1, m_G=1, m_B=1, m_A=1;
