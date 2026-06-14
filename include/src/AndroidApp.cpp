@@ -116,6 +116,8 @@ int32_t AndroidApp::_HandleInput(android_app* state, AInputEvent* event) {
 }
 
 bool AndroidApp::DispatchTouch(float x, float y) {
+    for (auto& rg : m_RadioGroups)
+        if (rg->OnTouch(x, y)) return true;
     for (auto& box : m_ScrollBoxes)
         if (box->OnTouch(x, y)) return true;
 
@@ -140,6 +142,8 @@ bool AndroidApp::DispatchTouch(float x, float y) {
 }
 
 void AndroidApp::DispatchTouchMove(float x, float y) {
+    for (auto& rg : m_RadioGroups)
+        rg->OnTouchMove(x, y);
     for (auto& box : m_ScrollBoxes)
         box->OnTouchMove(x, y);
     for (auto& el : m_Elements)
@@ -147,6 +151,8 @@ void AndroidApp::DispatchTouchMove(float x, float y) {
 }
 
 void AndroidApp::DispatchRelease(float x, float y) {
+    for (auto& rg : m_RadioGroups)
+        rg->OnRelease(x, y);
     for (auto& box : m_ScrollBoxes)
         box->OnRelease(x, y);
     for (auto& el : m_Elements)

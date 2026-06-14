@@ -73,6 +73,19 @@ public:
             }
             myScrollBox->SetContentHeight(itemY);
 
+            auto myCheckBox = std::make_shared<CheckBox>(myScrollBox->GetX() + myScrollBox->GetW() + 12.0f, myScrollBox->GetY(), 32.0f);
+            addElement(myCheckBox);
+
+            auto myRadioGroup = std::make_shared<RadioGroup>(
+                myCheckBox->GetX(),
+                myCheckBox->GetY() + myCheckBox->GetH() + 12.0f,
+                180.0f, 150.0f
+            );
+            myRadioGroup->AddOption("Option A");
+            myRadioGroup->AddOption("Option B");
+            myRadioGroup->AddOption("Option C");
+            myRadioGroup->SetSelected(0);
+            addRadioGroup(myRadioGroup);
             addScrollBox(myScrollBox);
             addElement(myProgress);
             addElement(myTextarea);

@@ -240,6 +240,9 @@ bool UIRenderer::Init(ANativeActivity* activity, std::variant<AndroidApp*, Andro
                     renderer->BeginFrame();
                 }
 
+                for (auto& rg : app_->getRadioGroups())
+                    rg->Draw(*this);
+
                 for (auto& box : app_->getScrollBoxes())
                     box->Draw(*this);
                 

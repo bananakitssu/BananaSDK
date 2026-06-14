@@ -6,6 +6,7 @@
 #include "BananaSDK/Textarea.h"
 #include "BananaSDK/Progress.h"
 #include "BananaSDK/CircleProgress.h"
+#include "BananaSDK/CheckBox.h"
 #include <variant>
 #include <memory>
 
@@ -19,7 +20,8 @@ namespace UIEl {
         std::shared_ptr<InputField>,
         std::shared_ptr<Textarea>,
         std::shared_ptr<Progress>,
-        std::shared_ptr<CircleProgress>
+        std::shared_ptr<CircleProgress>,
+        std::shared_ptr<CheckBox>
     >;
 }
 
