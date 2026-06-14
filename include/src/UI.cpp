@@ -44,7 +44,7 @@ void main() {
 }
 )glsl";
 
-static const char* RING_FRAG = R"glsl(
+/*static const char* RING_FRAG = R"glsl(
 precision mediump float;
 uniform vec2  u_center;
 uniform float u_radius;
@@ -71,6 +71,55 @@ void main() {
         float edgeAA = 1.5 / max(u_radius, 1.0);
         float arcAlpha = 1.0 - smoothstep(u_sweepAngle, u_sweepAngle + edgeAA, rel);
         alpha *= arcAlpha;
+    }
+
+    gl_FragColor = vec4(u_color.rgb, u_color.a * alpha);
+}
+)glsl";*/
+
+static const char* RING_FRAG = R"glsl(
+precision mediump float;
+uniform vec2  u_center;
+uniform float u_radius;
+uniform float u_stroke;
+uniform float u_startAngle;
+uniform float u_sweepAngle;
+uniform vec4  u_color;
+uniform float u_sh;
+
+const float TWO_PI = 6.28318530718;
+
+void main() {
+    vec2 fc = vec2(gl_FragCoord.x, u_sh - gl_FragCoord.y);
+    vec2 p  = fc - u_center;
+
+    float dist = length(p);
+    float ringBand = 1.0 - smoothstep(-0.5, 0.5, abs(dist - u_radius) - u_stroke * 0.5);
+
+    float alpha = 0.0;
+
+    if (u_sweepAngle >= TWO_PI - 0.001) {
+        alpha = ringBand;
+    } else {
+        float angle = atan(p.x, -p.y);
+        if (angle < 0.0) angle += TWO_PI;
+        float rel = mod(angle - u_startAngle, TWO_PI);
+        float edgeAA = 1.5 / max(u_radius, 1.0);
+        float arcMask = 1.0 - smoothstep(u_sweepAngle, u_sweepAngle + edgeAA, rel);
+        alpha = ringBand * arcMask;
+
+        // Round caps at both ends of the arc
+        vec2 capStart = u_radius * vec2(sin(u_startAngle), -cos(u_startAngle));
+        vec2 capEnd   = u_radius * vec2(sin(u_startAngle + u_sweepAngle), -cos(u_startAngle + u_sweepAngle));
+        float capR    = u_stroke * 0.5;
+
+        float dCapStart = length(p - capStart);
+        float dCapEnd   = length(p - capEnd);
+
+        float cap1 = 1.0 - smoothstep(capR - 0.5, capR + 0.5, dCapStart);
+        float cap2 = 1.0 - smoothstep(capR - 0.5, capR + 0.5, dCapEnd);
+
+        alpha = max(alpha, max(cap1, cap2));
     }
 
     gl_FragColor = vec4(u_color.rgb, u_color.a * alpha);
