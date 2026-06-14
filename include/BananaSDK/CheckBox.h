@@ -1,5 +1,7 @@
 #pragma once
 #include <functional>
+#include <string>
+#include <chrono>
 
 class UIRenderer;
 
@@ -27,6 +29,10 @@ public:
     void OnTouchMove(float x, float y);
     void OnRelease(float x, float y);
 
+    void SetLabel(const std::string& label);
+    void SetLabelColor(float r, float g, float b, float a = 1.0f);
+    void SetFontSize(float size);
+
     void Draw(UIRenderer& ui);
 
 private:
@@ -37,6 +43,16 @@ private:
 
     float m_BoxR=0.80f, m_BoxG=0.80f, m_BoxB=0.82f, m_BoxA=1.0f;
     float m_FillR=0.0f, m_FillG=0.478f, m_FillB=1.0f, m_FillA=1.0f;
+    
+    std::string m_Label;
+    float m_FontSize = 26.0f;
+    float m_LabelR=0.1f, m_LabelG=0.1f, m_LabelB=0.1f, m_LabelA=1.0f;
+    
+    mutable float m_LabelWidth = 0.0f;
+
+    float m_AnimT = 0.0f; // 0 = unchecked, 1 = checked (animated)
+    std::chrono::steady_clock::time_point m_LastTime;
+    bool m_FirstFrame = true;
 
     std::function<void(bool)> m_OnChange;
 };

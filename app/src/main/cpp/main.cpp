@@ -74,6 +74,7 @@ public:
             myScrollBox->SetContentHeight(itemY);
 
             auto myCheckBox = std::make_shared<CheckBox>(myScrollBox->GetX() + myScrollBox->GetW() + 12.0f, myScrollBox->GetY(), 32.0f);
+            myCheckBox->SetLabel("Uhhh");
             addElement(myCheckBox);
 
             auto myRadioGroup = std::make_shared<RadioGroup>(

@@ -2,6 +2,7 @@
 #include <string>
 #include <vector>
 #include <functional>
+#include <chrono>
 
 class UIRenderer;
 
@@ -61,6 +62,10 @@ private:
     bool  m_IsDown=false, m_IsDragging=false, m_DraggingThumb=false;
     float m_TouchStartY=0.0f, m_ScrollStart=0.0f;
     float m_TouchStartX_=0.0f, m_TouchY_=0.0f;
+
+    std::vector<float> m_AnimT;
+    std::chrono::steady_clock::time_point m_LastTime;
+    bool m_FirstFrame = true;
 
     std::function<void(int)> m_OnChange;
 };
