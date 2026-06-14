@@ -29,6 +29,9 @@ public:
                float startAngle, float sweepAngle,
                float r, float g, float b, float a);
 
+    void DrawCheck(float x, float y, float size, float stroke,
+                float r, float g, float b, float a);
+
     float MeasureText(const std::string& text, float fontSize);
 
     int  GetWidth()  const { return m_Width; }
@@ -51,6 +54,7 @@ private:
     ANativeActivity* m_Activity = nullptr;
     unsigned int m_StencilProg = 0;
     unsigned int m_RingProg = 0;
+    unsigned int m_CheckProg = 0;
     GLuint m_RectProg = 0;
     GLuint m_TexProg  = 0;
     int    m_Width    = 0;
