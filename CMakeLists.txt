@@ -19,6 +19,7 @@ add_library(bananasdk SHARED
     include/src/Textarea.cpp
     include/src/JNIBridge.cpp
     include/src/Progress.cpp
+    include/src/CircleProgress.cpp
     app/src/main/cpp/main.cpp
 )
 

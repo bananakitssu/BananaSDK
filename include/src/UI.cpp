@@ -44,6 +44,39 @@ void main() {
 }
 )glsl";
 
+static const char* RING_FRAG = R"glsl(
+precision mediump float;
+uniform vec2  u_center;
+uniform float u_radius;
+uniform float u_stroke;
+uniform float u_startAngle;
+uniform float u_sweepAngle;
+uniform vec4  u_color;
+uniform float u_sh;
+
+const float TWO_PI = 6.28318530718;
+
+void main() {
+    vec2 fc = vec2(gl_FragCoord.x, u_sh - gl_FragCoord.y);
+    vec2 p  = fc - u_center;
+
+    float dist = length(p);
+    float ringDist = abs(dist - u_radius) - u_stroke * 0.5;
+    float alpha = 1.0 - smoothstep(-0.5, 0.5, ringDist);
+
+    if (u_sweepAngle < TWO_PI - 0.001) {
+        float angle = atan(p.x, -p.y);
+        if (angle < 0.0) angle += TWO_PI;
+        float rel = mod(angle - u_startAngle, TWO_PI);
+        float edgeAA = 1.5 / max(u_radius, 1.0);
+        float arcAlpha = 1.0 - smoothstep(u_sweepAngle, u_sweepAngle + edgeAA, rel);
+        alpha *= arcAlpha;
+    }
+
+    gl_FragColor = vec4(u_color.rgb, u_color.a * alpha);
+}
+)glsl";
+
 static const char* RECT_FRAG_STENCIL = R"glsl(
 precision mediump float;
 uniform vec2  u_tl;
@@ -133,6 +166,11 @@ bool UIRenderer::Init(ANativeActivity* activity, std::variant<AndroidApp*, Andro
     m_Width    = w;
     m_Height   = h;
     m_RectProg = CreateProgram(RECT_VERT, RECT_FRAG);
+    m_RingProg = CreateProgram(RECT_VERT, RING_FRAG);
+    if (!m_RingProg) {
+        _BANANA_LOGE("UIRenderer: ring shader init failed");
+        return false;
+    }
     m_StencilProg = CreateProgram(RECT_VERT, RECT_FRAG_STENCIL);
     if (!m_StencilProg) {
         _BANANA_LOGE("UIRenderer: stencil shader init failed");
@@ -183,6 +221,7 @@ bool UIRenderer::Init(ANativeActivity* activity, std::variant<AndroidApp*, Andro
 
 void UIRenderer::Destroy() {
     if (m_RectProg) { glDeleteProgram(m_RectProg); m_RectProg = 0; }
+    if (m_RingProg) { glDeleteProgram(m_RingProg); m_RingProg = 0; }
     if (m_StencilProg) { glDeleteProgram(m_StencilProg); m_StencilProg = 0; }
     if (m_TexProg)  { glDeleteProgram(m_TexProg);  m_TexProg  = 0; }
     m_Ready = false;
@@ -208,6 +247,37 @@ void UIRenderer::DrawRect(float x, float y, float w, float h,
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
     glDisableVertexAttribArray(pos);
 }
+
+// ── DrawRing ─────────────   
+
+void UIRenderer::DrawRing(float cx, float cy, float radius, float stroke,
+                           float startAngle, float sweepAngle,
+                           float r, float g, float b, float a) {
+    if (!m_Ready) return;
+
+    float pad  = stroke * 0.5f + 1.0f;
+    float x    = cx - radius - pad;
+    float y    = cy - radius - pad;
+    float size = (radius + pad) * 2.0f;
+    float verts[] = { x, y,  x+size, y,  x, y+size,  x+size, y+size };
+
+    glUseProgram(m_RingProg);
+    glUniform2f(glGetUniformLocation(m_RingProg, "u_res"),        (float)m_Width, (float)m_Height);
+    glUniform2f(glGetUniformLocation(m_RingProg, "u_center"),     cx, cy);
+    glUniform1f(glGetUniformLocation(m_RingProg, "u_radius"),     radius);
+    glUniform1f(glGetUniformLocation(m_RingProg, "u_stroke"),     stroke);
+    glUniform1f(glGetUniformLocation(m_RingProg, "u_startAngle"), startAngle);
+    glUniform1f(glGetUniformLocation(m_RingProg, "u_sweepAngle"), sweepAngle);
+    glUniform4f(glGetUniformLocation(m_RingProg, "u_color"),      r, g, b, a);
+    glUniform1f(glGetUniformLocation(m_RingProg, "u_sh"),         (float)m_Height);
+
+    GLint pos = glGetAttribLocation(m_RingProg, "a_pos");
+    glVertexAttribPointer(pos, 2, GL_FLOAT, GL_FALSE, 0, verts);
+    glEnableVertexAttribArray(pos);
+    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+    glDisableVertexAttribArray(pos);
+}
+
 
 // ── Text (JNI Canvas → GL Texture) ───────────────────────────────────────────
 

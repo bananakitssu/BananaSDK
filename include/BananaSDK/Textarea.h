@@ -36,6 +36,11 @@ public:
     void SetTextFromIME(const std::string& text);
     void TriggerSubmit(const std::string& text);
 
+    float GetX() const { return m_X; }
+    float GetY() const { return m_Y; }
+    float GetW() const { return m_W; }
+    float GetH() const { return m_H; }
+
 private:
     void _Focus();
     void _Unfocus();
