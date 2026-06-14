@@ -1,5 +1,6 @@
 #include "BananaSDK/CheckBox.h"
 #include "BananaSDK/UI.h"
+#include <cmath>
 #include <algorithm>
 
 CheckBox::CheckBox(float x, float y, float size)
