@@ -56,11 +56,13 @@ void Progress::Draw(UIRenderer& ui) {
     float fillW, fillH, fillX;
 
     if (ph < t0) {
-        float t = smoothstep01(ph / f0);
-        fillH = h * t;
-        fillW = fillH;
-        fillX = leftEdge;
-    } else if (ph < t1) {
+    float t = smoothstep01(ph / f0);
+    float centerX = leftEdge + h * 0.5f;
+    fillH = h * t;
+    fillW = fillH;
+    fillX = centerX - fillW * 0.5f;
+    fillYDyn = m_Y + (m_H - fillH) * 0.5f;
+} else if (ph < t1) {
         float t = smoothstep01((ph - t0) / f1);
         fillH = h;
         fillW = h + (growLimit - h) * t;
@@ -76,11 +78,13 @@ void Progress::Draw(UIRenderer& ui) {
         fillW = growLimit + (h - growLimit) * t;
         fillX = rightEdge - fillW;
     } else {
-        float t = smoothstep01((ph - t3) / f4);
-        fillH = h * (1.0f - t);
-        fillW = fillH;
-        fillX = rightEdge - fillW;
-    }
+    float t = smoothstep01((ph - t3) / f4);
+    float centerX = rightEdge - h * 0.5f;  // center of the circle from end of phase 3
+    fillH = h * (1.0f - t);
+    fillW = fillH;
+    fillX = centerX - fillW * 0.5f;
+    fillYDyn = m_Y + (m_H - fillH) * 0.5f;
+}
 
     float fillYDyn = m_Y + (m_H - fillH) * 0.5f;
     float rad = std::min(fillW, fillH) * 0.5f;
