@@ -16,7 +16,9 @@ void CheckBox::SetChecked(bool checked) {
 void CheckBox::SetOnChange(std::function<void(bool)> cb) { m_OnChange = cb; }
 void CheckBox::SetBoxColor(float r,float g,float b,float a)  { m_BoxR=r; m_BoxG=g; m_BoxB=b; m_BoxA=a; }
 void CheckBox::SetFillColor(float r,float g,float b,float a) { m_FillR=r; m_FillG=g; m_FillB=b; m_FillA=a; }
-
+void CheckBox::SetFontSize(float size) { m_FontSize = size; }
+void CheckBox::SetLabelColor(float r,float g,float b,float a) { m_LabelR=r; m_LabelG=g; m_LabelB=b; m_LabelA=a; }
+void CheckBox::SetLabel(const std::string& label) { m_Label = label; }
 bool CheckBox::HitTest(float x, float y) const {
     float gap = m_Label.empty() ? 0.0f : 8.0f;
     float totalW = m_W + gap + m_LabelWidth;
