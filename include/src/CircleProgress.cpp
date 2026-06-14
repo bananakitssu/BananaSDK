@@ -38,7 +38,7 @@ void CircleProgress::Draw(UIRenderer& ui) {
     ui.DrawRing(cx, cy, radius, m_Stroke, 0.0f, TWO_PI, m_TrackR, m_TrackG, m_TrackB, m_TrackA);
 
     const float minSweep = 0.35f;
-    const float maxSweep = TWO_PI * 0.75f;
+    const float maxSweep = TWO_PI * 0.92f;
 
     if (m_Progress < 0.0f) {
         // Morph-in: grow from a dot to the oscillation's starting sweep (minSweep),
