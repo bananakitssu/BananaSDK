@@ -17,6 +17,8 @@ public:
     void SetPosition(float x, float y);
     void SetText(const std::string& text);
     void SetFontSize(float size);
+    float GetX() const { return m_X; }
+    float GetY() const { return m_Y; }
     void SetColor(float r, float g, float b, float a = 1.0f);
     void SetMaxWidth(float maxWidth);   // 0 = no wrapping
     void SetLineSpacing(float spacing);
