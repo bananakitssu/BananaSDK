@@ -11,6 +11,7 @@
 #include <android_native_app_glue.h>
 #include <android/input.h>
 #include "BananaSDK/UIElements.h"
+#include "BananaSDK/ScrollBox.h"
 
 #define startAndroid(AppClass)                            \
     extern "C" {                                          \
@@ -126,6 +127,10 @@ public:
     bool m_ImeFocused = false;
     void SetImeFocused(bool f) { m_ImeFocused = f; }
     bool IsImeFocused() const  { return m_ImeFocused; }
+
+    std::vector<std::shared_ptr<ScrollBox>> m_ScrollBoxes;
+    void addScrollBox(std::shared_ptr<ScrollBox> box) { m_ScrollBoxes.push_back(box); }
+    std::vector<std::shared_ptr<ScrollBox>>& getScrollBoxes() { return m_ScrollBoxes; }
 
 private:
     _BananaInternal::ListenerMap m_Listeners;

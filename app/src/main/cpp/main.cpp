@@ -58,6 +58,22 @@ public:
                 36.0f
             );
             myProgress->SetProgress(-1.0f);
+            auto myScrollBox = std::make_shared<ScrollBox>(
+                myProgress->GetX(),
+                myProgress->GetY() + myProgress->GetH() + 12.0f,
+                250.0f, 200.0f
+            );
+            myScrollBox->SetBgColor(0.92f, 0.92f, 0.92f, 1.0f);
+
+            float itemY = 0.0f;
+            for (int i = 0; i < 10; i++) {
+                auto label = std::make_shared<Text>(12.0f, itemY + 12.0f, "Item " + std::to_string(i+1), 0.0f, 28.0f);
+                myScrollBox->AddElement(label);
+                itemY += 50.0f;
+            }
+            myScrollBox->SetContentHeight(itemY);
+
+            addScrollBox(myScrollBox);
             addElement(myProgress);
             addElement(myTextarea);
             addElement(myInput);

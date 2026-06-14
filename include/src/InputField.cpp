@@ -15,6 +15,7 @@ void InputField::SetPlaceholder(const std::string& t)                    { m_Pla
 void InputField::SetText(const std::string& t)                           { m_Text = t; }
 void InputField::SetFontSize(float s)                                    { m_FontSize = s; }
 void InputField::SetRadius(float r)                                      { m_Radius = r; }
+void InputField::SetPosition(float x, float y)                           { m_X = x; m_Y = y; }
 void InputField::SetOnChange(std::function<void(const std::string&)> cb) { m_OnChange = cb; }
 void InputField::SetOnSubmit(std::function<void(const std::string&)> cb) { m_OnSubmit = cb; }
 std::string InputField::GetText() const { return m_Text; }

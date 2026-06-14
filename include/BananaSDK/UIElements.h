@@ -10,6 +10,8 @@
 #include <memory>
 
 namespace UIEl {
+    class ScrollBoxFwd;
+
     using UIElement = std::variant<
         std::shared_ptr<Button>,
         std::shared_ptr<Box>,
@@ -20,3 +22,5 @@ namespace UIEl {
         std::shared_ptr<CircleProgress>
     >;
 }
+
+#include "BananaSDK/ScrollBox.h"
