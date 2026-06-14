@@ -20,6 +20,7 @@ void RadioGroup::SetOnChange(std::function<void(int)> cb) { m_OnChange = cb; }
 
 void RadioGroup::AddOption(const std::string& label) {
     m_Options.push_back(label);
+    m_AnimT.push_back(0.0f);
 }
 
 void RadioGroup::SetSelected(int index) {
@@ -120,6 +121,11 @@ void RadioGroup::OnRelease(float x, float y) {
 }
 
 void RadioGroup::Draw(UIRenderer& ui) {
+    auto now = std::chrono::steady_clock::now();
+    float dt = m_FirstFrame ? 0.0f : std::chrono::duration<float>(now - m_LastTime).count();
+    m_LastTime = now;
+    m_FirstFrame = false;
+
     ui.DrawRect(m_X, m_Y, m_W, m_H, m_BgR, m_BgG, m_BgB, m_BgA, m_Radius);
 
     ui.PushRoundedScissor(m_X, m_Y, m_W, m_H, m_Radius);
@@ -139,10 +145,15 @@ void RadioGroup::Draw(UIRenderer& ui) {
         // Outer ring
         ui.DrawRing(cx, cy, radioR, radioStroke, 0.0f, TWO_PI, m_RadioR, m_RadioG, m_RadioB, m_RadioA);
 
-        // Inner filled dot if selected
-        if ((int)i == m_Selected) {
-            float innerR = radioR * 0.5f;
-            ui.DrawRing(cx, cy, innerR * 0.5f, innerR, 0.0f, TWO_PI, m_RadioR, m_RadioG, m_RadioB, m_RadioA);
+        // Animate toward target
+        float target = ((int)i == m_Selected) ? 1.0f : 0.0f;
+        m_AnimT[i] += (target - m_AnimT[i]) * std::min(1.0f, dt * 14.0f);
+        if (std::abs(target - m_AnimT[i]) < 0.01f) m_AnimT[i] = target;
+
+        if (m_AnimT[i] > 0.01f) {
+            float innerR = radioR * 0.5f * m_AnimT[i]; // scales in from 0
+            if (innerR > 0.5f)
+                ui.DrawRing(cx, cy, innerR * 0.5f, innerR, 0.0f, TWO_PI, m_RadioR, m_RadioG, m_RadioB, m_RadioA * m_AnimT[i]);
         }
 
         // Label
