@@ -48,7 +48,7 @@ public:
                 myInput->GetX(),
                 myInput->GetY() + myInput->GetH() + 12.0f,
                 myInput->GetW(),
-                24.0f
+                36.0f
             );
             myProgress->SetProgress(-1.0f);
             addElement(myProgress);

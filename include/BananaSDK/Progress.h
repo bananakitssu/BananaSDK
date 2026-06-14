@@ -33,7 +33,7 @@ public:
 
 private:
     float m_X=0, m_Y=0, m_W=200.0f, m_H=24.0f;
-    float m_Padding    = 24.0f;
+    float m_Padding    = 6.0f;
     float m_MorphPoint = 0.15f;
     float m_GrowLimitF = 0.4f;
     float m_Speed      = 8.0f;
