@@ -53,7 +53,7 @@ void Progress::Draw(UIRenderer& ui) {
     float f4 = 0.20f; // circle -> nothing (right-anchored)
     float t0=f0, t1=t0+f1, t2=t1+f2, t3=t2+f3;
 
-    float fillW, fillH, fillX;
+    float fillW, fillH, fillX, fillYDyn;
 
     if (ph < t0) {
     float t = smoothstep01(ph / f0);
