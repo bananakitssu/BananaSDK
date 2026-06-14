@@ -4,11 +4,12 @@
 #include <cmath>
 
 ScrollBox::ScrollBox(float x, float y, float w, float h)
-    : m_X(x), m_Y(y), m_W(w), m_H(h) {}
+    : m_X(x), m_Y(y), m_W(w), m_H(h), m_ScrollOffset(0.0f) {}
 
 void ScrollBox::SetPosition(float x, float y) { m_X=x; m_Y=y; }
 void ScrollBox::SetSize(float w, float h)     { m_W=w; m_H=h; }
 void ScrollBox::SetRadius(float r)            { m_Radius = r; }
+void ScrollBox::SetPadding(float p)           { m_Padding = p; }
 void ScrollBox::SetContentHeight(float h)     { m_ContentH = h; }
 void ScrollBox::SetBgColor(float r,float g,float b,float a) { m_BgR=r; m_BgG=g; m_BgB=b; m_BgA=a; }
 void ScrollBox::SetScrollbarColor(float r,float g,float b,float a) { m_SbR=r; m_SbG=g; m_SbB=b; m_SbA=a; }
@@ -127,7 +128,7 @@ void ScrollBox::Draw(UIRenderer& ui) {
             // Temporarily shift position for drawing
             float ox = ptr->GetX();
             float oy = ptr->GetY();
-            ptr->SetPosition(ox, oy - m_ScrollOffset);
+            ptr->SetPosition(ox + m_Padding, oy - m_ScrollOffset + m_Padding);
             ptr->Draw(ui);
             ptr->SetPosition(ox, oy); // restore logical position
         }, el);
