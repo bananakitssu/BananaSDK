@@ -12,6 +12,7 @@
 #include <android/input.h>
 #include "BananaSDK/UIElements.h"
 #include "BananaSDK/ScrollBox.h"
+#include "BananaSDK/RadioGroup.h"
 
 #define startAndroid(AppClass)                            \
     extern "C" {                                          \
@@ -131,6 +132,9 @@ public:
     std::vector<std::shared_ptr<ScrollBox>> m_ScrollBoxes;
     void addScrollBox(std::shared_ptr<ScrollBox> box) { m_ScrollBoxes.push_back(box); }
     std::vector<std::shared_ptr<ScrollBox>>& getScrollBoxes() { return m_ScrollBoxes; }
+    std::vector<std::shared_ptr<RadioGroup>> m_RadioGroups;
+    void addRadioGroup(std::shared_ptr<RadioGroup> rg) { m_RadioGroups.push_back(rg); }
+    std::vector<std::shared_ptr<RadioGroup>>& getRadioGroups() { return m_RadioGroups; }
 
 private:
     _BananaInternal::ListenerMap m_Listeners;

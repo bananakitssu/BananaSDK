@@ -21,6 +21,8 @@ add_library(bananasdk SHARED
     include/src/Progress.cpp
     include/src/CircleProgress.cpp
     include/src/ScrollBox.cpp
+    include/src/RadioGroup.cpp
+    include/src/CheckBox.cpp
     app/src/main/cpp/main.cpp
 )
 
