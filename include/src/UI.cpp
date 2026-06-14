@@ -239,6 +239,9 @@ bool UIRenderer::Init(ANativeActivity* activity, std::variant<AndroidApp*, Andro
                 if (renderer != nullptr) {
                     renderer->BeginFrame();
                 }
+
+                for (auto& box : app_->getScrollBoxes())
+                    box->Draw(*this);
                 
                 for (auto& element : app_->getElements()) {
                     std::visit([this](auto& visualItem) {

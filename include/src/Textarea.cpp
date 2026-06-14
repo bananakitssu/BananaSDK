@@ -17,6 +17,7 @@ void Textarea::SetPlaceholder(const std::string& t)                    { m_Place
 void Textarea::SetText(const std::string& t)                           { m_Text = t; m_LinesDirty = true; }
 void Textarea::SetFontSize(float s)                                    { m_FontSize = s; }
 void Textarea::SetRadius(float r)                                      { m_Radius = r; }
+void Textarea::SetPosition(float x, float y)                           { m_X = x; m_Y = y; }
 void Textarea::SetLineSpacing(float s)                                 { m_LineSpacing = s; }
 void Textarea::SetOnChange(std::function<void(const std::string&)> cb) { m_OnChange = cb; }
 void Textarea::SetOnSubmit(std::function<void(const std::string&)> cb) { m_OnSubmit = cb; }

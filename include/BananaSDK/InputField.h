@@ -16,6 +16,7 @@ public:
     void SetText(const std::string& text);
     void SetFontSize(float size);
     void SetRadius(float radius);
+    void SetPosition(float x, float y);
     void SetOnChange(std::function<void(const std::string&)> cb);
     void SetOnSubmit(std::function<void(const std::string&)> cb);
 

@@ -116,6 +116,9 @@ int32_t AndroidApp::_HandleInput(android_app* state, AInputEvent* event) {
 }
 
 bool AndroidApp::DispatchTouch(float x, float y) {
+    for (auto& box : m_ScrollBoxes)
+        if (box->OnTouch(x, y)) return true;
+
     for (auto& el : m_Elements) {
         std::visit([&](auto& ptr) {
             using T = std::decay_t<decltype(*ptr)>;
@@ -137,11 +140,15 @@ bool AndroidApp::DispatchTouch(float x, float y) {
 }
 
 void AndroidApp::DispatchTouchMove(float x, float y) {
+    for (auto& box : m_ScrollBoxes)
+        box->OnTouchMove(x, y)
     for (auto& el : m_Elements)
         std::visit([x, y](auto& ptr) { ptr->OnTouchMove(x, y); }, el);
 }
 
 void AndroidApp::DispatchRelease(float x, float y) {
+    for (auto& box : m_ScrollBoxes)
+        box->OnRelease(x, y)
     for (auto& el : m_Elements)
         std::visit([x, y](auto& ptr) { ptr->OnRelease(x, y); }, el);
 }
