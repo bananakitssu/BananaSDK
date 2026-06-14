@@ -40,56 +40,54 @@ void Progress::Draw(UIRenderer& ui) {
     float fillRad   = h * 0.5f;
 
     if (m_Progress < 0.0f) {
-        // 4-phase loop:
-        // 1) grow: circle -> pill (left-anchored)
-        // 2) slide pill right (constant width)
-        // 3) shrink width: pill -> circle (right-anchored)
-        // 4) shrink to nothing (both axes, collapsing toward right edge)
-        m_IndetPhase += dt / m_CycleTime;
-        while (m_IndetPhase > 1.0f) m_IndetPhase -= 1.0f;
-        float ph = m_IndetPhase;
+    m_IndetPhase += dt / m_CycleTime;
+    while (m_IndetPhase > 1.0f) m_IndetPhase -= 1.0f;
+    float ph = m_IndetPhase;
 
-        float growLimit = usableW * m_GrowLimitF;
+    float growLimit = usableW * m_GrowLimitF;
 
-        float f1 = 0.20f;
-        float f2 = 0.40f;
-        float f3 = 0.15f;
-        float f4 = 0.25f;
-        float t1 = f1, t2 = t1 + f2, t3 = t2 + f3;
+    float f0 = 0.10f; // grow from nothing -> circle (left-anchored)
+    float f1 = 0.15f; // circle -> pill (left-anchored)
+    float f2 = 0.40f; // slide pill right
+    float f3 = 0.15f; // pill -> circle (right-anchored)
+    float f4 = 0.20f; // circle -> nothing (right-anchored)
+    float t0=f0, t1=t0+f1, t2=t1+f2, t3=t2+f3;
 
-        float fillW, fillH, fillX, fillYDyn;
+    float fillW, fillH, fillX;
 
-        if (ph < t1) {
-            float t = smoothstep01(ph / f1);
-            fillW = h + (growLimit - h) * t;
-            fillH = h;
-            fillX = leftEdge;
-            fillYDyn = fillY;
-        } else if (ph < t2) {
-            float t = smoothstep01((ph - t1) / f2);
-            fillW = growLimit;
-            fillH = h;
-            fillX = leftEdge + (rightEdge - growLimit - leftEdge) * t;
-            fillYDyn = fillY;
-        } else if (ph < t3) {
-            float t = smoothstep01((ph - t2) / f3);
-            fillW = growLimit + (h - growLimit) * t;
-            fillH = h;
-            fillX = rightEdge - fillW;
-            fillYDyn = fillY;
-        } else {
-            float t = smoothstep01((ph - t3) / f4);
-            fillH = h * (1.0f - t);
-            fillW = fillH;
-            fillX = rightEdge - fillW;
-            fillYDyn = m_Y + (m_H - fillH) * 0.5f;
-        }
-
-        float rad = std::min(fillW, fillH) * 0.5f;
-        if (fillW > 0.01f && fillH > 0.01f)
-            ui.DrawRect(fillX, fillYDyn, fillW, fillH, m_FillR, m_FillG, m_FillB, m_FillA, rad);
-        return;
+    if (ph < t0) {
+        float t = smoothstep01(ph / f0);
+        fillH = h * t;
+        fillW = fillH;
+        fillX = leftEdge;
+    } else if (ph < t1) {
+        float t = smoothstep01((ph - t0) / f1);
+        fillH = h;
+        fillW = h + (growLimit - h) * t;
+        fillX = leftEdge;
+    } else if (ph < t2) {
+        float t = smoothstep01((ph - t1) / f2);
+        fillH = h;
+        fillW = growLimit;
+        fillX = leftEdge + (rightEdge - growLimit - leftEdge) * t;
+    } else if (ph < t3) {
+        float t = smoothstep01((ph - t2) / f3);
+        fillH = h;
+        fillW = growLimit + (h - growLimit) * t;
+        fillX = rightEdge - fillW;
+    } else {
+        float t = smoothstep01((ph - t3) / f4);
+        fillH = h * (1.0f - t);
+        fillW = fillH;
+        fillX = rightEdge - fillW;
     }
+
+    float fillYDyn = m_Y + (m_H - fillH) * 0.5f;
+    float rad = std::min(fillW, fillH) * 0.5f;
+    if (fillW > 0.01f && fillH > 0.01f)
+        ui.DrawRect(fillX, fillYDyn, fillW, fillH, m_FillR, m_FillG, m_FillB, m_FillA, rad);
+    return;
+}
 
     // Determinate: dot -> pill -> bar
     float target = std::clamp(m_Progress, 0.0f, 1.0f);
