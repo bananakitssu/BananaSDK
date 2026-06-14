@@ -86,7 +86,7 @@ void Progress::Draw(UIRenderer& ui) {
     fillYDyn = m_Y + (m_H - fillH) * 0.5f;
 }
 
-    float fillYDyn = m_Y + (m_H - fillH) * 0.5f;
+    fillYDyn = m_Y + (m_H - fillH) * 0.5f;
     float rad = std::min(fillW, fillH) * 0.5f;
     if (fillW > 0.01f && fillH > 0.01f)
         ui.DrawRect(fillX, fillYDyn, fillW, fillH, m_FillR, m_FillG, m_FillB, m_FillA, rad);
