@@ -139,7 +139,7 @@ void ScrollBox::Draw(UIRenderer& ui) {
     if (m_ContentH > m_H) {
         float tx, ty, tw, th;
         _GetThumbRect(tx, ty, tw, th);
-        ui.DrawRect(tx, ty + m_Padding, tw, th - m_Padding, m_SbR, m_SbG, m_SbB, m_SbA, tw * 0.5f);
+        ui.DrawRect(tx, ty + m_Padding, tw, th - (m_Padding * 2), m_SbR, m_SbG, m_SbB, m_SbA, tw * 0.5f);
     }
 
     ui.PopRoundedScissor();
