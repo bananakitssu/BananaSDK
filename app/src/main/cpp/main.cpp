@@ -99,6 +99,17 @@ public:
             myDropdown->AddOption("Yellow");
             myDropdown->AddOption("Purple");
             myDropdown->SetSelected(0);
+            auto myMultiDropdown = std::make_shared<MultiDropdown>(
+                myDropdown->GetX() + myDropdown->GetW() + 12.0f,
+                myDropdown->GetY(),
+                180.0f, 48.0f
+            );
+            myMultiDropdown->AddOption("Apples");
+            myMultiDropdown->AddOption("Bananas");
+            myMultiDropdown->AddOption("Cherries");
+            myMultiDropdown->AddOption("Dates");
+            myMultiDropdown->SetPlaceholder("Pick fruits");
+            addElement(myMultiDropdown);
             addElement(myDropdown);
             addElement(myProgress);
             addElement(myTextarea);
