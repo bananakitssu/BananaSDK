@@ -101,7 +101,7 @@ public:
             myDropdown->SetSelected(0);
             auto myMultiDropdown = std::make_shared<MultiDropdown>(
                 myDropdown->GetX(),
-                myDropdown->GetY() + myDropdown->GerH() + 12.0f,
+                myDropdown->GetY() + myDropdown->GetH() + 12.0f,
                 180.0f, 48.0f
             );
             myMultiDropdown->AddOption("Apples");
