@@ -129,7 +129,7 @@ void ScrollBox::Draw(UIRenderer& ui) {
             float ox = ptr->GetX();
             float oy = ptr->GetY();  // this is the LOCAL/relative position (0-based)
 
-            ptr->SetPosition(m_X + ox + m_Padding, m_Y + oy - m_ScrollOffset + m_Padding);
+            ptr->SetPosition(m_X + ox + m_Padding, m_Y + oy - m_ScrollOffset);
             ptr->Draw(ui);
             ptr->SetPosition(ox, oy); // restore to local coords
         }, el);
