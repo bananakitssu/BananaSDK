@@ -24,6 +24,7 @@ add_library(bananasdk SHARED
     include/src/RadioGroup.cpp
     include/src/CheckBox.cpp
     include/src/Dropdown.cpp
+    include/src/MultiDropdown.cpp
     app/src/main/cpp/main.cpp
 )
 

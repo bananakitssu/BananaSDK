@@ -116,6 +116,12 @@ int32_t AndroidApp::_HandleInput(android_app* state, AInputEvent* event) {
 }
 
 bool AndroidApp::DispatchTouch(float x, float y) {
+    if constexpr (std::is_same_v<T, Dropdown> || std::is_same_v<T, MultiDropdown>) {
+        if (!ptr->HitTest(x, y) && ptr->IsOpen()) {
+            ptr->Close();
+            closedSomething = true;
+        }
+    }
     for (auto& rg : m_RadioGroups)
         if (rg->OnTouch(x, y)) return true;
     for (auto& box : m_ScrollBoxes)
