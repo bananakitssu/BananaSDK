@@ -47,7 +47,7 @@ private:
     float _RowHeight() const;
 
     float m_X=0, m_Y=0, m_W=200.0f, m_H=48.0f;
-    float m_Radius   = 12.0f;
+    float m_Radius   = 9999.0f;
     float m_FontSize = 26.0f;
     int   m_MaxRows  = 4;
 
